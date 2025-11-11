@@ -326,6 +326,15 @@
         .news-item .news-meta { display:flex; gap:10px; align-items:center; color:#64748b; font-size: 0.95rem; margin-bottom:8px; }
         .news-item .news-text { color:#64748b; font-size: 1rem; line-height: 1.6; }
         
+        .awards-section { background: white; border: 1px solid #e5e7eb; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 40px; }
+        .awards-header { display:flex; align-items:center; gap:12px; padding:20px 28px; background: #0f172a; color:#fff; font-weight:700; font-size: 1.25rem; border-radius:20px 20px 0 0; }
+        .awards-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(380px,1fr)); gap:24px; padding:28px; }
+        .award-card { background:#f8fafc; border:1px solid #e5e7eb; border-radius:16px; padding:20px 24px; display:flex; gap:16px; align-items:center; transition: all 0.3s ease; }
+        .award-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .award-icon { width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink: 0; }
+        .award-title { font-weight:700; color:#1f2937; font-size: 1.1rem; margin-bottom: 4px; }
+        .award-sub { color:#64748b; font-size: 0.95rem; }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .main-content {
@@ -381,6 +390,11 @@
             .brand-icon {
                 width: 60px;
                 height: 70px;
+            }
+            
+            .awards-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
             }
             
             .achievement-grid {
@@ -484,6 +498,41 @@
                     </div>
                 </div>
                 
+            </div>
+
+            <!-- Prestasi Sekolah (grid ringkas) -->
+            <div class="awards-section">
+                <div class="awards-header"><i class="fas fa-trophy"></i> Prestasi Sekolah</div>
+                <div class="awards-grid">
+                    <div class="award-card">
+                        <div class="award-icon"><i class="fas fa-medal"></i></div>
+                        <div>
+                            <div class="award-title">Juara 1 Kompetisi Programming Nasional</div>
+                            <div class="award-sub">2024 · Tim PPLG</div>
+                        </div>
+                    </div>
+                    <div class="award-card">
+                        <div class="award-icon"><i class="fas fa-medal"></i></div>
+                        <div>
+                            <div class="award-title">Juara 2 Lomba Jaringan Komputer</div>
+                            <div class="award-sub">2024 · Tim TJKT</div>
+                        </div>
+                    </div>
+                    <div class="award-card">
+                        <div class="award-icon"><i class="fas fa-medal"></i></div>
+                        <div>
+                            <div class="award-title">Juara 3 Kompetisi Otomotif</div>
+                            <div class="award-sub">2024 · Tim TO</div>
+                        </div>
+                    </div>
+                    <div class="award-card">
+                        <div class="award-icon"><i class="fas fa-medal"></i></div>
+                        <div>
+                            <div class="award-title">Juara 1 Lomba Pengelasan</div>
+                            <div class="award-sub">2024 · Tim TPFL</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="achievement-section">
