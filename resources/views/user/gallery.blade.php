@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Galeri Foto - SMKN 4 BOGOR</title>
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -78,18 +78,66 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
+
+        /* User profile dropdown (sama seperti dashboard) */
+        .user-profile { position: relative; }
+        .user-profile-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+        .user-profile-toggle:hover { background: #eef2ff; border-color: #c7d2fe; }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 999px; background: #3b82f6; color: #fff;
+            display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600;
+        }
+        .user-name { max-width: 120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .user-profile-toggle i { font-size:11px; color:#6b7280; }
+        .user-dropdown {
+            position:absolute; right:0; top:120%; background:#fff; border-radius:14px;
+            box-shadow:0 10px 25px rgba(15,23,42,0.18); border:1px solid #e5e7eb;
+            padding:12px 14px; width:230px; z-index:50; display:none;
+        }
+        .user-dropdown.show { display:block; }
+        .user-info-name { font-size:0.95rem; font-weight:600; color:#111827; }
+        .user-info-email { font-size:0.8rem; color:#6b7280; margin-top:2px; word-break:break-all; }
+        .user-dropdown-divider { height:1px; background:#e5e7eb; margin:10px 0; }
+        .user-logout-btn {
+            width:100%; border:none; border-radius:8px; padding:9px 10px; background:#ef4444;
+            color:#fff; font-size:0.9rem; font-weight:600; display:inline-flex; align-items:center;
+            justify-content:center; gap:6px; cursor:pointer; transition:all 0.2s ease;
+        }
+        .user-logout-btn:hover { background:#dc2626; box-shadow:0 6px 14px rgba(220,38,38,0.4); }
         
         /* Main Content */
-        .main-content { padding: 40px 0; background: #f8f9fa; min-height: calc(100vh - 100px); }
+        .main-content { padding: 0 0 40px; background: #f8f9fa; min-height: calc(100vh - 100px); }
         
         .gallery-header {
+            position: relative;
             text-align: center;
             margin-bottom: 40px;
+            padding: 40px 20px;
+            border-radius: 0 0 20px 20px;
+            color: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            background-image: linear-gradient(135deg, rgba(37, 99, 235, 0.65), rgba(30, 64, 175, 0.65)), url('../../images/DJI_0148.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         
-        .gallery-title { font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; }
+        .gallery-title { font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 15px; }
         
-        .gallery-subtitle { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto; }
+        .gallery-subtitle { font-size: 1.1rem; color: #e5e7eb; max-width: 600px; margin: 0 auto; }
         
         /* Gallery Controls */
         .gallery-controls {
@@ -236,19 +284,24 @@
         }
         
         /* List View Specific Styles */
-        .gallery-grid[style*="1fr"] .gallery-item {
+        .gallery-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .gallery-grid.list-view .gallery-item {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            max-height: 280px;
+            grid-template-columns: 320px 1fr;
+            max-height: 260px;
         }
         
-        .gallery-grid[style*="1fr"] .gallery-image {
+        .gallery-grid.list-view .gallery-image {
             height: 100%;
-            max-height: 280px;
+            max-height: 260px;
+            border-radius: 20px 0 0 20px;
         }
         
-        .gallery-grid[style*="1fr"] .gallery-info {
-            padding: 24px 30px;
+        .gallery-grid.list-view .gallery-info {
+            padding: 20px 24px;
         }
         
         .gallery-item { 
@@ -269,7 +322,7 @@
         
         .gallery-image {
             width: 100%;
-            height: 280px;
+            height: 260px; /* foto lebih besar mendominasi kartu */
             object-fit: cover;
             object-position: center;
             cursor: pointer;
@@ -278,17 +331,17 @@
         }
         
         .gallery-info {
-            padding: 24px;
+            padding: 16px 20px 18px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
         
         .gallery-title { 
-            font-size: 1.25rem; 
+            font-size: 1.1rem; 
             font-weight: 700; 
             color: #1e293b; 
-            margin-bottom: 12px; 
+            margin-bottom: 8px; 
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -297,25 +350,56 @@
             text-overflow: ellipsis;
             min-height: 2.8em;
         }
+
+        /* Pastikan teks di header galeri mengikuti style seperti halaman Informasi */
+        .gallery-header .gallery-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .gallery-header .gallery-subtitle {
+            font-size: 1.1rem;
+            color: #e5e7eb;
+        }
         
+        .gallery-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
         .gallery-category {
-            display: inline-block;
-            background: #3b82f6;
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .category-tag-icon {
+            font-size: 0.85rem;
+        }
+
+        .gallery-photo-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .gallery-meta-separator {
+            color: #9ca3af;
         }
         
         .gallery-description { 
             color: #64748b; 
-            font-size: 0.95rem; 
-            line-height: 1.6; 
-            margin-bottom: 14px;
+            font-size: 0.9rem; 
+            line-height: 1.5; 
+            margin-bottom: 8px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -362,22 +446,22 @@
         /* Gallery Actions Container */
         .gallery-actions {
             display: flex;
-            gap: 10px;
-            margin-top: auto;
-            padding-top: 15px;
+            gap: 8px;
+            margin-top: 10px;
         }
         
         .gallery-action-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border-radius: 8px;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             border: 2px solid #e2e8f0;
+            background: #ffffff;
         }
         
         .gallery-action-btn:hover {
@@ -386,31 +470,48 @@
         }
         
         .btn-download-action {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
+            background: #ffffff;
+            color: #1f2933;
+            border-color: #cbd2e1;
         }
         
         .btn-download-action:hover {
-            background: #2563eb;
-            border-color: #2563eb;
+            background: #f1f5f9;
+            border-color: #9fb3c8;
         }
         
         .btn-like-action {
-            background: #f8fafc;
-            color: #64748b;
-            border-color: #e2e8f0;
+            background: #ffffff;
+            color: #4b5563;
+            border-color: #cbd5e1;
         }
         
         .btn-like-action:hover {
             background: #f1f5f9;
-            border-color: #cbd5e1;
+            border-color: #9ca3af;
         }
         
         .btn-like-action.liked {
-            background: #fef2f2;
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #2563eb;
+        }
+
+        .btn-dislike-action {
+            background: #ffffff;
+            color: #4b5563;
             border-color: #fecaca;
-            color: #ef4444;
+        }
+
+        .btn-dislike-action:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .btn-dislike-action.disliked {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #b91c1c;
         }
         
         .action-icon {
@@ -462,11 +563,12 @@
         
         .modal-header { 
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            padding: 24px 30px; 
+            padding: 10px 18px; 
             border-radius: 16px 16px 0 0; 
             display: flex; 
-            justify-content: space-between; 
+            justify-content: flex-end; 
             align-items: center;
+            min-height: 40px;
         }
         
         .modal-title { 
@@ -496,13 +598,60 @@
         }
         
         .modal-body {
-            padding: 30px;
-            max-height: calc(80vh - 200px);
-            overflow-y: auto;
+            padding: 24px 28px;
         }
         
         .form-group {
             margin-bottom: 20px;
+        }
+
+        /* Modal detail foto: layout dua kolom */
+        .image-modal-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(260px, 1.4fr);
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .image-modal-left {
+            position: relative;
+        }
+
+        .image-modal-right {
+            text-align: left;
+            padding-right: 4px;
+        }
+
+        .image-modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .image-modal-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            padding: 0;
+            border-radius: 0;
+            background: transparent;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .image-modal-meta {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .image-modal-description {
+            font-size: 0.9rem;
+            color: #4b5563;
+            line-height: 1.6;
+            white-space: pre-line;
         }
         
         .form-label { display: block; color: #374151; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
@@ -772,10 +921,22 @@
             <div class="nav-menu">
                 <ul class="nav-links">
                     <li><a href="{{ route('user.dashboard') }}">Beranda</a></li>
-                    <li><a href="{{ route('user.agenda') }}">Agenda</a></li>
-                    <li><a href="{{ route('user.informasi') }}">Informasi</a></li>
                     <li><a href="{{ route('user.gallery') }}" class="active">Galeri</a></li>
+                    <li><a href="{{ route('user.informasi') }}">Informasi</a></li>
+                    <li><a href="{{ route('user.agenda') }}">Agenda</a></li>
                 </ul>
+                @guest
+                    <a href="{{ route('login') }}" class="login-btn">Login</a>
+                @else
+                    <div class="user-profile">
+                        <div class="user-profile-toggle" style="cursor: default;">
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name ?? 'User' }}</span>
+                        </div>
+                    </div>
+                @endguest
             </div>
         </nav>
     </header>
@@ -817,7 +978,15 @@
             <!-- Gallery Grid -->
             <div class="gallery-grid" id="galleryGrid">
                 @foreach($galeri as $item)
-                <div class="gallery-item" data-category="{{ $item->post->kategori->judul ?? 'Umum' }}" data-gallery-id="{{ $item->id }}">
+                <div class="gallery-item" 
+                     data-category="{{ $item->post->kategori->judul ?? 'Umum' }}" 
+                     data-gallery-id="{{ $item->id }}"
+                     @if($item->fotos->count() > 0)
+                        data-foto-id="{{ $item->fotos->first()->id }}"
+                        data-foto-file="{{ $item->fotos->first()->file }}"
+                        data-foto-likes="{{ $item->fotos->first()->likes }}"
+                        data-foto-dislikes="{{ $item->fotos->first()->dislikes ?? 0 }}"
+                     @endif>
                     @if($item->fotos->count() > 0)
                         <img src="{{ asset('uploads/galeri/' . $item->fotos->first()->file) }}" 
                              alt="{{ $item->post->judul ?? 'Gallery Image' }}" 
@@ -830,23 +999,35 @@
                     @endif
                     <div class="gallery-info">
                         <h3 class="gallery-title">{{ $item->post->judul ?? 'Untitled' }}</h3>
-                        <span class="gallery-category">{{ $item->post->kategori->judul ?? 'Umum' }}</span>
+                        <div class="gallery-meta-row">
+                            <span class="gallery-category">
+                                <span class="category-tag-icon">
+                                    <i class="fas fa-tag"></i>
+                                </span>
+                                <span class="category-text">{{ $item->post->kategori->judul ?? 'Umum' }}</span>
+                            </span>
+                            <span class="gallery-meta-separator">•</span>
+                            <span class="gallery-photo-count">
+                                <i class="fas fa-image"></i> {{ $item->fotos->count() }} foto
+                            </span>
+                        </div>
                         <p class="gallery-description">{{ $item->post->isi ?? 'No description available' }}</p>
-                        @if($item->fotos->count() > 1)
-                            <p class="gallery-description"><i class="fas fa-images"></i> {{ $item->fotos->count() }} foto</p>
-                        @endif
                         @if($item->fotos->count() > 0)
                             <?php $defaultTitle = "Gallery Image"; ?>
                             <div class="gallery-actions">
+                                <button class="gallery-action-btn btn-like-action" data-type="like" data-foto-id="{{ $item->fotos->first()->id }}" onclick="event.stopPropagation(); toggleLike('{{ $item->fotos->first()->id }}', this)">
+                                    <i class="fas fa-thumbs-up action-icon"></i>
+                                    <span class="action-count">{{ $item->fotos->first()->likes }}</span>
+                                </button>
+
+                                <button class="gallery-action-btn btn-dislike-action" data-type="dislike" data-foto-id="{{ $item->fotos->first()->id }}" onclick="event.stopPropagation(); toggleDislike('{{ $item->fotos->first()->id }}', this)">
+                                    <i class="fas fa-thumbs-down action-icon"></i>
+                                    <span class="action-count">{{ $item->fotos->first()->dislikes ?? 0 }}</span>
+                                </button>
+
                                 <button class="gallery-action-btn btn-download-action" onclick="event.stopPropagation(); openDownloadModal('{{ $item->fotos->first()->file }}', '{{ addslashes($item->post->judul ?? $defaultTitle) }}')">
                                     <i class="fas fa-download action-icon"></i>
                                     <span>Download</span>
-                                </button>
-                                
-                                <!-- Like Button -->
-                                <button class="gallery-action-btn btn-like-action" onclick="event.stopPropagation(); toggleLike('{{ $item->fotos->first()->id }}', this)">
-                                    <i class="fas fa-heart{{ $item->fotos->first()->likes > 0 ? '' : '-o' }} action-icon"></i>
-                                    <span class="action-count">{{ $item->fotos->first()->likes }}</span>
                                 </button>
                             </div>
                         @endif
@@ -867,21 +1048,53 @@
 
     <!-- Image Preview Modal -->
     <div id="imageModal" class="modal">
-        <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-content" style="max-width: 980px;">
             <div class="modal-header">
-                <h2 class="modal-title" id="imageModalTitle">Preview Foto</h2>
+                <h2 class="modal-title" id="imageModalTitle" style="display:none;">Preview Foto</h2>
                 <span class="close" onclick="closeModal('imageModal')">&times;</span>
             </div>
-            <div class="modal-body" style="text-align: center; padding: 0; position: relative;">
-                <div class="carousel-container">
-                    <img id="imageModalImg" src="" alt="Preview" class="carousel-image">
-                    <button class="carousel-nav carousel-prev" onclick="changeImage(-1)" id="prevBtn" style="display: none;">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="carousel-nav carousel-next" onclick="changeImage(1)" id="nextBtn" style="display: none;">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <div class="carousel-counter" id="imageCounter" style="display: none;"></div>
+            <div class="modal-body">
+                <div class="image-modal-layout">
+                    <div class="image-modal-left">
+                        <div class="carousel-container">
+                            <img id="imageModalImg" src="" alt="Preview" class="carousel-image">
+                            <button class="carousel-nav carousel-prev" onclick="changeImage(-1)" id="prevBtn" style="display: none;">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-nav carousel-next" onclick="changeImage(1)" id="nextBtn" style="display: none;">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="carousel-counter" id="imageCounter" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="image-modal-right">
+                        <div class="image-modal-title" id="imageModalDetailTitle">Judul Foto</div>
+                        <div class="image-modal-category" id="imageModalDetailCategory" style="display:none;">
+                            <span class="category-tag-icon">
+                                <i class="fas fa-tags"></i>
+                            </span>
+                            <span class="category-text" id="imageModalDetailCategoryText"></span>
+                        </div>
+                        <div class="image-modal-meta" id="imageModalDetailMeta" style="display:none;"></div>
+                        <div class="image-modal-description" id="imageModalDetailDescription"></div>
+
+                        <div class="gallery-actions" style="margin-top:16px;">
+                            <button class="gallery-action-btn btn-like-action" id="modalLikeButton" data-type="like">
+                                <i class="fas fa-thumbs-up action-icon"></i>
+                                <span class="action-count" id="modalLikeCount">0</span>
+                            </button>
+
+                            <button class="gallery-action-btn btn-dislike-action" id="modalDislikeButton" data-type="dislike">
+                                <i class="fas fa-thumbs-down action-icon"></i>
+                                <span class="action-count" id="modalDislikeCount">0</span>
+                            </button>
+
+                            <button class="gallery-action-btn btn-download-action" id="modalDownloadButton">
+                                <i class="fas fa-download action-icon"></i>
+                                <span>Download</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -927,17 +1140,101 @@
             const galleryItem = document.querySelector(`[data-gallery-id="${galleryId}"]`);
             if (!galleryItem) return;
             
-            // Get title
-            const title = galleryItem.querySelector('.gallery-title').textContent;
-            
+            // Get title & description from card
+            const titleEl = galleryItem.querySelector('.gallery-title');
+            const categoryEl = galleryItem.querySelector('.gallery-category');
+            const descriptionEl = galleryItem.querySelector('.gallery-description');
+            const photosDataContainer = galleryItem.querySelector('.gallery-photos-data');
+
+            const title = titleEl ? titleEl.textContent.trim() : 'Preview Foto';
+            const category = categoryEl ? categoryEl.textContent.trim() : '';
+            const description = descriptionEl ? descriptionEl.textContent.trim() : '';
+
+            // Foto utama (pertama) untuk aksi like/dislike/download
+            const mainFotoId = galleryItem.getAttribute('data-foto-id');
+            const mainFotoFile = galleryItem.getAttribute('data-foto-file');
+            const mainFotoLikes = parseInt(galleryItem.getAttribute('data-foto-likes') || '0', 10);
+            const mainFotoDislikes = parseInt(galleryItem.getAttribute('data-foto-dislikes') || '0', 10);
+
             // Get all photos
-            const photoElements = galleryItem.querySelectorAll('.gallery-photos-data span[data-photo]');
+            const photoElements = photosDataContainer ? photosDataContainer.querySelectorAll('span[data-photo]') : [];
             currentImages = Array.from(photoElements).map(el => el.getAttribute('data-photo'));
             currentImageIndex = 0;
-            
+
+            // Hitung jumlah foto
+            const totalPhotos = currentImages.length;
+
             // Show modal
             document.getElementById('imageModalTitle').textContent = title;
             document.getElementById('imageModal').style.display = 'block';
+
+            // Isi panel deskripsi di samping foto
+            const detailTitleEl = document.getElementById('imageModalDetailTitle');
+            const detailCategoryEl = document.getElementById('imageModalDetailCategory');
+            const detailCategoryTextEl = document.getElementById('imageModalDetailCategoryText');
+            const detailMetaEl = document.getElementById('imageModalDetailMeta');
+            const detailDescEl = document.getElementById('imageModalDetailDescription');
+            const modalLikeButton = document.getElementById('modalLikeButton');
+            const modalDislikeButton = document.getElementById('modalDislikeButton');
+            const modalDownloadButton = document.getElementById('modalDownloadButton');
+            const modalLikeCount = document.getElementById('modalLikeCount');
+            const modalDislikeCount = document.getElementById('modalDislikeCount');
+
+            if (detailTitleEl) detailTitleEl.textContent = title;
+
+            if (detailCategoryEl) {
+                if (category) {
+                    if (detailCategoryTextEl) {
+                        detailCategoryTextEl.textContent = category;
+                    }
+                    detailCategoryEl.style.display = 'inline-block';
+                } else {
+                    detailCategoryEl.style.display = 'none';
+                }
+            }
+
+            if (detailMetaEl) {
+                if (totalPhotos > 0) {
+                    detailMetaEl.textContent = totalPhotos + ' foto dalam galeri ini';
+                    detailMetaEl.style.display = 'block';
+                } else {
+                    detailMetaEl.style.display = 'none';
+                }
+            }
+
+            if (detailDescEl) {
+                detailDescEl.textContent = description || 'Tidak ada deskripsi untuk galeri ini.';
+            }
+
+            // Sinkronkan tombol aksi di modal dengan foto utama galeri
+            if (mainFotoId) {
+                if (modalLikeButton && modalLikeCount) {
+                    modalLikeButton.dataset.fotoId = mainFotoId;
+                    modalLikeCount.textContent = isNaN(mainFotoLikes) ? 0 : mainFotoLikes;
+                    modalLikeButton.classList.remove('liked');
+                    modalLikeButton.onclick = function (event) {
+                        event.stopPropagation();
+                        toggleLike(mainFotoId, modalLikeButton);
+                    };
+                }
+
+                if (modalDislikeButton && modalDislikeCount) {
+                    modalDislikeButton.dataset.fotoId = mainFotoId;
+                    modalDislikeCount.textContent = isNaN(mainFotoDislikes) ? 0 : mainFotoDislikes;
+                    modalDislikeButton.classList.remove('disliked');
+                    modalDislikeButton.onclick = function (event) {
+                        event.stopPropagation();
+                        toggleDislike(mainFotoId, modalDislikeButton);
+                    };
+                }
+
+                if (modalDownloadButton && mainFotoFile) {
+                    modalDownloadButton.onclick = function (event) {
+                        event.stopPropagation();
+                        openDownloadModal(mainFotoFile, title);
+                    };
+                }
+            }
             
             // Display first image
             updateCarousel();
@@ -1139,16 +1436,16 @@
                 const grid = document.getElementById('galleryGrid');
                 
                 if (view === 'list') {
-                    grid.style.gridTemplateColumns = '1fr';
+                    grid.classList.add('list-view');
                 } else {
-                    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+                    grid.classList.remove('list-view');
                 }
             });
         });
         
         // Halaman galeri kini read-only; tidak ada form CRUD
         
-        // Like/Unlike Functionality
+        // Like/Dislike Functionality
         async function toggleLike(fotoId, button) {
             try {
                 const response = await fetch(`/foto/${fotoId}/toggle-like`, {
@@ -1162,21 +1459,81 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Update like count
-                    const likeCount = button.querySelector('.action-count');
-                    likeCount.textContent = data.likes;
-                    
-                    // Toggle liked class
-                    if (data.liked) {
-                        button.classList.add('liked');
-                    } else {
-                        button.classList.remove('liked');
-                    }
+                    // Update semua tombol LIKE untuk foto ini (card & modal)
+                    document.querySelectorAll('.btn-like-action[data-foto-id="' + fotoId + '"]').forEach(function (btn) {
+                        const likeCountSpan = btn.querySelector('.action-count');
+                        if (likeCountSpan) {
+                            likeCountSpan.textContent = data.likes;
+                        }
+
+                        if (data.liked) {
+                            btn.classList.add('liked');
+                        } else {
+                            btn.classList.remove('liked');
+                        }
+                    });
+
+                    // Update semua tombol DISLIKE untuk foto ini (card & modal)
+                    document.querySelectorAll('.btn-dislike-action[data-foto-id="' + fotoId + '"]').forEach(function (btn) {
+                        const dislikeCountSpan = btn.querySelector('.action-count');
+                        if (dislikeCountSpan && typeof data.dislikes !== 'undefined') {
+                            dislikeCountSpan.textContent = data.dislikes;
+                        }
+                        if (data.liked) {
+                            btn.classList.remove('disliked');
+                        }
+                    });
                 } else {
                     alert('Gagal memperbarui like: ' + data.message);
                 }
             } catch (error) {
                 console.error('Error toggling like:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
+        }
+
+        async function toggleDislike(fotoId, button) {
+            try {
+                const response = await fetch(`/foto/${fotoId}/toggle-dislike`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update semua tombol DISLIKE untuk foto ini (card & modal)
+                    document.querySelectorAll('.btn-dislike-action[data-foto-id="' + fotoId + '"]').forEach(function (btn) {
+                        const dislikeCountSpan = btn.querySelector('.action-count');
+                        if (dislikeCountSpan) {
+                            dislikeCountSpan.textContent = data.dislikes;
+                        }
+
+                        if (data.disliked) {
+                            btn.classList.add('disliked');
+                        } else {
+                            btn.classList.remove('disliked');
+                        }
+                    });
+
+                    // Update semua tombol LIKE untuk foto ini (card & modal)
+                    document.querySelectorAll('.btn-like-action[data-foto-id="' + fotoId + '"]').forEach(function (btn) {
+                        const likeCountSpan = btn.querySelector('.action-count');
+                        if (likeCountSpan && typeof data.likes !== 'undefined') {
+                            likeCountSpan.textContent = data.likes;
+                        }
+                        if (data.disliked) {
+                            btn.classList.remove('liked');
+                        }
+                    });
+                } else {
+                    alert('Gagal memperbarui dislike: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error toggling dislike:', error);
                 alert('Terjadi kesalahan. Silakan coba lagi.');
             }
         }

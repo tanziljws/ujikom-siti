@@ -128,31 +128,254 @@
             color: white;
             background: #3b82f6;
         }
+
+        .login-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .login-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* User profile dropdown (sama seperti dashboard) */
+        .user-profile { position: relative; }
+        .user-profile-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+        .user-profile-toggle:hover { background: #eef2ff; border-color: #c7d2fe; }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 999px; background: #3b82f6; color: #fff;
+            display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600;
+        }
+        .user-name { max-width: 120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .user-profile-toggle i { font-size:11px; color:#6b7280; }
+        .user-dropdown {
+            position:absolute; right:0; top:120%; background:#fff; border-radius:14px;
+            box-shadow:0 10px 25px rgba(15,23,42,0.18); border:1px solid #e5e7eb;
+            padding:12px 14px; width:230px; z-index:50; display:none;
+        }
+        .user-dropdown.show { display:block; }
+        .user-info-name { font-size:0.95rem; font-weight:600; color:#111827; }
+        .user-info-email { font-size:0.8rem; color:#6b7280; margin-top:2px; word-break:break-all; }
+        .user-dropdown-divider { height:1px; background:#e5e7eb; margin:10px 0; }
+        .user-logout-btn {
+            width:100%; border:none; border-radius:8px; padding:9px 10px; background:#ef4444;
+            color:#fff; font-size:0.9rem; font-weight:600; display:inline-flex; align-items:center;
+            justify-content:center; gap:6px; cursor:pointer; transition:all 0.2s ease;
+        }
+        .user-logout-btn:hover { background:#dc2626; box-shadow:0 6px 14px rgba(220,38,38,0.4); }
+
+        .login-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .login-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
         
         /* Main Content */
         .main-content {
-            padding: 60px 0;
+            padding: 0 0 60px;
         }
         
         .page-header {
+            position: relative;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 40px; /* disamakan dengan galeri */
+            padding: 60px 20px;  /* ditambah agar tidak terlalu tipis */
+            border-radius: 0 0 20px 20px;
+            color: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../../images/DJI_0148.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.65), rgba(30, 64, 175, 0.65));
+            z-index: -1;
         }
         
         .page-title { 
             font-size: 2rem; 
             font-weight: 700; 
-            color: #1e293b; 
+            color: #ffffff; 
             margin-bottom: 15px; 
         }
         
         .page-subtitle { 
             font-size: 1.1rem; 
-            color: #64748b; 
+            color: #e5e7eb; 
             max-width: 600px; 
             margin: 0 auto; 
         }
         
+        /* Informasi Terbaru Section */
+        .info-latest-section {
+            margin-bottom: 40px;
+        }
+
+        .info-latest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .info-latest-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .info-latest-subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+        }
+
+        .info-latest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card-latest {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 20px 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            flex-shrink: 0;
+        }
+
+        .info-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .info-card-date {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .info-card-description {
+            font-size: 0.9rem;
+            color: #4b5563;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .info-card-footer {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #2563eb;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .info-card-footer i {
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .info-latest-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .info-card-latest {
+                padding: 16px 16px 18px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .info-latest-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-latest-title {
+                font-size: 1.3rem;
+            }
+
+            .info-latest-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+
         /* Profile Section */
         .profile-section {
             background: white;
@@ -204,8 +427,8 @@
         }
         
         .contact-info {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 20px;
         }
         
@@ -213,6 +436,20 @@
             display: flex;
             align-items: flex-start;
             gap: 15px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.03);
+            transition: all 0.2s ease;
+            min-height: 120px;
+            overflow: hidden;
+        }
+        
+        .contact-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.07);
+            border-color: #cbd5e1;
         }
         
         .contact-icon {
@@ -231,6 +468,11 @@
             color: #3b82f6;
         }
         
+        .contact-details {
+            min-width: 0; /* penting supaya flex item boleh mengecil dan teks bisa wrap */
+            max-width: 100%;
+        }
+
         .contact-details h4 {
             font-size: 1.2rem;
             font-weight: 600;
@@ -243,6 +485,9 @@
             color: #64748b;
             text-decoration: none;
             transition: color 0.2s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         
         .contact-details a:hover {
@@ -330,6 +575,10 @@
             .map-container iframe {
                 height: 300px;
             }
+
+            .facilities-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         /* Facilities Section */
@@ -351,18 +600,21 @@
         
         .facilities-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
         }
         
         .facility-card {
             display: flex;
-            gap: 20px;
-            padding: 20px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
             border-radius: 12px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             transition: all 0.3s ease;
+            min-height: 210px;
         }
         
         .facility-card:hover {
@@ -396,8 +648,12 @@
         
         .facility-content p {
             color: #64748b;
-            line-height: 1.6;
+            line-height: 1.5;
             margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         /* Achievements Section */
@@ -598,12 +854,23 @@
                 padding: 0 20px;
             }
             
+            .profile-section,
+            .contact-section,
+            .facilities-section,
+            .achievements-section {
+                padding: 20px;
+            }
+
             .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info {
                 grid-template-columns: 1fr;
             }
             
             .facilities-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
             
             .achievements-list {
@@ -621,7 +888,7 @@
         
         @media (max-width: 576px) {
             .facility-card {
-                flex-direction: column;
+                min-height: 0;
             }
             
             .page-title {
@@ -654,6 +921,18 @@
                     <li><a href="{{ route('user.informasi') }}" class="active">Informasi</a></li>
                     <li><a href="{{ route('user.agenda') }}">Agenda</a></li>
                 </ul>
+                @guest
+                    <a href="{{ route('login') }}" class="login-btn">Login</a>
+                @else
+                    <div class="user-profile">
+                        <div class="user-profile-toggle" style="cursor: default;">
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name ?? 'User' }}</span>
+                        </div>
+                    </div>
+                @endguest
             </div>
         </nav>
     </header>
@@ -665,6 +944,49 @@
                 <h1 class="page-title">Informasi Sekolah</h1>
                 <p class="page-subtitle">Informasi lengkap tentang SMKN 4 Bogor</p>
             </div>
+
+            <!-- Informasi Terbaru (Dinamis dari tabel informasi) -->
+            <section class="info-latest-section">
+                <div class="info-latest-header">
+                    <div>
+                        <h2 class="info-latest-title">Informasi Terbaru</h2>
+                        <p class="info-latest-subtitle">Pengumuman dan informasi penting terbaru untuk siswa, orang tua, dan guru.</p>
+                    </div>
+                </div>
+
+                @if(isset($informasiItems) && $informasiItems->count() > 0)
+                <div class="info-latest-grid">
+                    @foreach($informasiItems as $info)
+                    <article class="info-card-latest">
+                        <div class="info-card-header">
+                            <div class="info-card-icon">
+                                @if(!empty($info->icon))
+                                    <i class="{{ $info->icon }}"></i>
+                                @else
+                                    <i class="fas fa-bullhorn"></i>
+                                @endif
+                            </div>
+                            <div>
+                                <div class="info-card-title">{{ $info->title }}</div>
+                                @if($info->date)
+                                    <div class="info-card-date">{{ $info->date->format('d M Y') }}</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <p class="info-card-description">{{ $info->description }}</p>
+
+                        <div class="info-card-footer">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Hubungi sekolah untuk informasi lebih lanjut</span>
+                        </div>
+                    </article>
+                    @endforeach
+                </div>
+                @else
+                <p class="info-latest-subtitle">Belum ada informasi terbaru yang dapat ditampilkan.</p>
+                @endif
+            </section>
             
             <!-- Profile Section -->
             <section class="profile-section">
@@ -677,10 +999,17 @@
             <!-- Program Expertise Section -->
             <section class="facilities-section">
                 <h2 class="facilities-title">{{ \App\Models\SiteSetting::get('expertise_title', 'Program Keahlian') }}</h2>
+                @php
+                    $exp1Icon = \App\Models\SiteSetting::get('expertise_1_icon');
+                    $exp2Icon = \App\Models\SiteSetting::get('expertise_2_icon');
+                    $exp3Icon = \App\Models\SiteSetting::get('expertise_3_icon');
+                    $exp4Icon = \App\Models\SiteSetting::get('expertise_4_icon');
+                @endphp
                 <div class="facilities-grid">
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="fas fa-laptop"></i>
+                            {{-- RPL: default laptop-code --}}
+                            <i class="{{ $exp1Icon ?: 'fas fa-laptop-code' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('expertise_1_name', 'Rekayasa Perangkat Lunak') }}</h4>
@@ -690,7 +1019,8 @@
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="fas fa-desktop"></i>
+                            {{-- TJKT: default network-wired --}}
+                            <i class="{{ $exp2Icon ?: 'fas fa-network-wired' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('expertise_2_name', 'Teknik Komputer dan Jaringan') }}</h4>
@@ -700,152 +1030,24 @@
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="fas fa-paint-brush"></i>
+                            {{-- TPFL / Pengelasan: default tools --}}
+                            <i class="{{ $exp3Icon ?: 'fas fa-tools' }}"></i>
                         </div>
                         <div class="facility-content">
-                            <h4>{{ \App\Models\SiteSetting::get('expertise_3_name', 'Multimedia') }}</h4>
-                            <p>{{ \App\Models\SiteSetting::get('expertise_3_description', 'Mengembangkan keterampilan dalam desain grafis, animasi, dan produksi media.') }}</p>
+                            <h4>{{ \App\Models\SiteSetting::get('expertise_3_name', 'Teknik Pengelasan dan Fabrikasi Logam') }}</h4>
+                            <p>{{ \App\Models\SiteSetting::get('expertise_3_description', 'Mempelajari teknik pengelasan dan pembuatan konstruksi logam sesuai standar industri.') }}</p>
                         </div>
                     </div>
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="fas fa-file-alt"></i>
+                            {{-- TO / Otomotif: default car --}}
+                            <i class="{{ $exp4Icon ?: 'fas fa-car' }}"></i>
                         </div>
                         <div class="facility-content">
-                            <h4>{{ \App\Models\SiteSetting::get('expertise_4_name', 'Otomatisasi dan Tata Kelola Perkantoran') }}</h4>
-                            <p>{{ \App\Models\SiteSetting::get('expertise_4_description', 'Menguasai keterampilan administrasi perkantoran dan teknologi informasi.') }}</p>
+                            <h4>{{ \App\Models\SiteSetting::get('expertise_4_name', 'Teknik Otomotif') }}</h4>
+                            <p>{{ \App\Models\SiteSetting::get('expertise_4_description', 'Mendalami perawatan, perbaikan, dan sistem kerja kendaraan bermotor.') }}</p>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Contact Section -->
-            <section class="contact-section">
-                <h2 class="contact-title">{{ \App\Models\SiteSetting::get('contact_title', 'Hubungi Kami') }}</h2>
-                <div class="contact-grid">
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div class="contact-details">
-                                <h4>Alamat</h4>
-                                <p>{{ \App\Models\SiteSetting::get('contact_address', 'Jl. Raya Tajur No. 84, Kota Bogor, Jawa Barat 16134') }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-phone"></i>
-                            </div>
-                            <div class="contact-details">
-                                <h4>Telepon</h4>
-                                <p>{{ \App\Models\SiteSetting::get('contact_phone', '(0251) 1234567') }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="contact-details">
-                                <h4>Email</h4>
-                                <p>{{ \App\Models\SiteSetting::get('contact_email', 'info@smkn4bogor.sch.id') }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-globe"></i>
-                            </div>
-                            <div class="contact-details">
-                                <h4>Website</h4>
-                                <p>{{ \App\Models\SiteSetting::get('contact_website', 'www.smkn4bogor.sch.id') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="map-container">
-                        @php
-                            $mapEmbed = \App\Models\SiteSetting::get('contact_map_embed', '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d106.79727831532822!3d-6.597005365229759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5d9c8b5b5b5%3A0x5b4b5b5b5b5b5b5b!2sSMKN%204%20Bogor!5e0!3m2!1sen!2sid!4v1678886405123!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>');
-                            $mapUrl = '#';
-                            
-                            // Function to parse coordinates from various formats
-                            function parseCoordinates($text) {
-                                // Format: lat,lng
-                                if (preg_match('/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/', trim($text), $matches)) {
-                                    $coords = explode(',', trim($text));
-                                    return ['lat' => trim($coords[0]), 'lng' => trim($coords[1])];
-                                }
-                                
-                                // Format: lat lng
-                                if (preg_match('/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),?\s+[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/', trim($text), $matches)) {
-                                    $coords = preg_split('/[,\s]+/', trim($text));
-                                    if (count($coords) >= 2) {
-                                        return ['lat' => trim($coords[0]), 'lng' => trim($coords[1])];
-                                    }
-                                }
-                                
-                                return null;
-                            }
-                            
-                            // Check if it's already an iframe
-                            if (strpos($mapEmbed, '<iframe') !== false) {
-                                // Extract URL from iframe for clickable link
-                                preg_match('/src="([^"]+)"/', $mapEmbed, $matches);
-                                $mapUrl = isset($matches[1]) ? $matches[1] : '#';
-                            } 
-                            // Check if it's a Google Maps URL
-                            elseif (filter_var($mapEmbed, FILTER_VALIDATE_URL)) {
-                                $mapUrl = $mapEmbed;
-                                
-                                // Check if it's a Google Maps share link
-                                if (strpos($mapEmbed, 'maps.app.goo.gl') !== false) {
-                                    // Convert short URL to embed URL
-                                    $mapEmbed = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d106.79727831532822!3d-6.597005365229759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5d9c8b5b5b5%3A0x5b4b5b5b5b5b5b5b!2sSMKN%204%20Bogor!5e0!3m2!1sen!2sid!4v1678886405123!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-                                } else if (strpos($mapEmbed, 'google.com/maps') !== false) {
-                                    // For regular Google Maps URLs, convert to embed
-                                    // Extract coordinates from URL if possible
-                                    $embedUrl = str_replace('/maps', '/maps/embed', $mapEmbed);
-                                    $mapEmbed = '<iframe src="' . $embedUrl . '" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-                                } else {
-                                    // For other URLs, show as a link
-                                    $mapEmbed = '<div style="height:450px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border:1px solid #ddd;border-radius:16px;">
-                                                    <div style="text-align:center;">
-                                                        <i class="fas fa-link" style="font-size:48px;color:#4285f4;margin-bottom:15px;"></i>
-                                                        <p>Link: <a href="' . $mapEmbed . '" target="_blank">' . $mapEmbed . '</a></p>
-                                                    </div>
-                                                </div>';
-                                }
-                            }
-                            // If it's plain text coordinates, try to convert to map
-                            elseif ($coords = parseCoordinates($mapEmbed)) {
-                                // It's coordinates, convert to Google Maps embed
-                                $lat = $coords['lat'];
-                                $lng = $coords['lng'];
-                                $mapEmbed = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d' . $lng . '!3d' . $lat . '!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z' . $lat . 'N%20' . $lng . 'E!5e0!3m2!1sen!2s!4v1678886405123!5m2!1sen!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-                                $mapUrl = 'https://www.google.com/maps?q=' . $lat . ',' . $lng;
-                            }
-                            // If it's neither, treat as plain text
-                            else {
-                                $mapEmbed = '<div style="height:450px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border:1px solid #ddd;border-radius:16px;">
-                                                <div style="text-align:center;padding:20px;">
-                                                    <i class="fas fa-map-marked-alt" style="font-size:48px;color:#4285f4;margin-bottom:15px;"></i>
-                                                    <h3 style="margin-bottom:10px;">Lokasi Sekolah</h3>
-                                                    <p style="margin-bottom:15px;">' . e($mapEmbed) . '</p>
-                                                    <p style="font-size:14px;color:#666;">Untuk menampilkan peta interaktif, masukkan URL Google Maps atau koordinat pada pengaturan situs.</p>
-                                                </div>
-                                            </div>';
-                            }
-                        @endphp
-                        <a href="{{ $mapUrl }}" target="_blank" class="block map-link">
-                            {!! $mapEmbed !!}
-                            <div class="map-overlay">
-                                <i class="fas fa-external-link-alt"></i>
-                                <span>Lihat di Google Maps</span>
-                            </div>
-                        </a>
                     </div>
                 </div>
             </section>
@@ -854,9 +1056,18 @@
             <section class="facilities-section">
                 <h2 class="facilities-title">{{ \App\Models\SiteSetting::get('facilities_title', 'Fasilitas Sekolah') }}</h2>
                 <div class="facilities-grid">
+                    @php
+                        $facility1Icon = \App\Models\SiteSetting::get('facility_1_icon');
+                        $facility2Icon = \App\Models\SiteSetting::get('facility_2_icon');
+                        $facility3Icon = \App\Models\SiteSetting::get('facility_3_icon');
+                        $facility4Icon = \App\Models\SiteSetting::get('facility_4_icon');
+                        $facility5Icon = \App\Models\SiteSetting::get('facility_5_icon');
+                        $facility6Icon = \App\Models\SiteSetting::get('facility_6_icon');
+                    @endphp
+
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="{{ \App\Models\SiteSetting::get('facility_1_icon', 'fas fa-laptop') }}"></i>
+                            <i class="{{ $facility1Icon ?: 'fas fa-laptop' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('facility_1_title', 'Laboratorium Komputer') }}</h4>
@@ -866,7 +1077,7 @@
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="{{ \App\Models\SiteSetting::get('facility_2_icon', 'fas fa-flask') }}"></i>
+                            <i class="{{ $facility2Icon ?: 'fas fa-flask' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('facility_2_title', 'Laboratorium IPA') }}</h4>
@@ -876,7 +1087,7 @@
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="{{ \App\Models\SiteSetting::get('facility_3_icon', 'fas fa-book') }}"></i>
+                            <i class="{{ $facility3Icon ?: 'fas fa-book' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('facility_3_title', 'Perpustakaan Digital') }}</h4>
@@ -886,17 +1097,17 @@
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="{{ \App\Models\SiteSetting::get('facility_4_icon', 'fas fa-dumbbell') }}"></i>
+                            <i class="{{ $facility4Icon ?: 'fas fa-dumbbell' }}"></i>
                         </div>
                         <div class="facility-content">
-                            <h4>{{ \App\Models\SiteSetting::get('facility_4_title', 'Fasilitas Olahraga') }}</h4>
-                            <p>{{ \App\Models\SiteSetting::get('facility_4_description', 'Lapangan olahraga dan fasilitas pendukung untuk kegiatan ekstrakurikuler dan kompetisi.') }}</p>
+                            <h4>{{ \App\Models\SiteSetting::get('facility_4_title', 'Ruang Olahraga') }}</h4>
+                            <p>{{ \App\Models\SiteSetting::get('facility_4_description', 'Fasilitas olahraga untuk mendukung kesehatan dan kebugaran siswa.') }}</p>
                         </div>
                     </div>
                     
                     <div class="facility-card">
                         <div class="facility-icon">
-                            <i class="{{ \App\Models\SiteSetting::get('facility_5_icon', 'fas fa-utensils') }}"></i>
+                            <i class="{{ $facility5Icon ?: 'fas fa-utensils' }}"></i>
                         </div>
                         <div class="facility-content">
                             <h4>{{ \App\Models\SiteSetting::get('facility_5_title', 'Kantin Sekolah') }}</h4>
@@ -954,6 +1165,146 @@
                         <h4><i class="{{ \App\Models\SiteSetting::get('achievement_6_icon', 'fas fa-music') }}"></i> {{ \App\Models\SiteSetting::get('achievement_6_title', 'Festival Musik Pelajar') }}</h4>
                         <p>{{ \App\Models\SiteSetting::get('achievement_6_description', 'Grup band sekolah meraih penghargaan khusus dalam Festival Musik Pelajar tingkat provinsi.') }}</p>
                         <span class="achievement-date">{{ \App\Models\SiteSetting::get('achievement_6_date', 'Mei 2023') }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section (dipindah ke bawah dekat footer) -->
+            <section class="contact-section">
+                <h2 class="contact-title">{{ \App\Models\SiteSetting::get('contact_title', 'Hubungi Kami') }}</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Alamat</h4>
+                                <p>{{ \App\Models\SiteSetting::get('contact_address', 'Jl. Raya Tajur No. 84, Kota Bogor, Jawa Barat 16134') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Telepon</h4>
+                                <p>{{ \App\Models\SiteSetting::get('contact_phone', '(0251) 1234567') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p>{{ \App\Models\SiteSetting::get('contact_email', 'info@smkn4bogor.sch.id') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Website</h4>
+                                <p>{{ \App\Models\SiteSetting::get('contact_website', 'www.smkn4bogor.sch.id') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-container">
+                        @php
+                            $defaultEmbed = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d106.79727831532822!3d-6.597005365229759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5d9c8b5b5b5%3A0x5b4b5b5b5b5b5b5b!2sSMKN%204%20Bogor!5e0!3m2!1sen!2sid!4v1678886405123!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+                            $defaultUrl = 'https://www.google.com/maps/place/SMKN+4+Bogor/';
+
+                            $mapEmbed = \App\Models\SiteSetting::get('contact_map_embed');
+                            $mapUrl = '#';
+
+                            // Jika kosong, langsung pakai default saja
+                            if (!$mapEmbed || trim($mapEmbed) === '') {
+                                $mapEmbed = $defaultEmbed;
+                                $mapUrl = $defaultUrl;
+                            }
+
+                            // Function to parse coordinates from various formats
+                            function parseCoordinates($text) {
+                                // Format: lat,lng
+                                if (preg_match('/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/', trim($text), $matches)) {
+                                    $coords = explode(',', trim($text));
+                                    return ['lat' => trim($coords[0]), 'lng' => trim($coords[1])];
+                                }
+                                
+                                // Format: lat lng
+                                if (preg_match('/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),?,\s+[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/', trim($text), $matches)) {
+                                    $coords = preg_split('/[,\s]+/', trim($text));
+                                    if (count($coords) >= 2) {
+                                        return ['lat' => trim($coords[0]), 'lng' => trim($coords[1])];
+                                    }
+                                }
+                                
+                                return null;
+                            }
+                            
+                            // Check if it's already an iframe
+                            if (strpos($mapEmbed, '<iframe') !== false) {
+                                // Extract URL from iframe for clickable link
+                                preg_match('/src="([^\"]+)"/', $mapEmbed, $matches);
+                                $iframeSrc = isset($matches[1]) ? $matches[1] : '';
+
+                                // Jika iframe berisi maps.app.goo.gl (short link), gunakan default embed saja
+                                if ($iframeSrc && strpos($iframeSrc, 'maps.app.goo.gl') !== false) {
+                                    $mapEmbed = $defaultEmbed;
+                                    $mapUrl = $defaultUrl;
+                                } else {
+                                    // Biarkan iframe apa adanya, dan gunakan src sebagai link
+                                    $mapUrl = $iframeSrc ?: $defaultUrl;
+                                }
+                            } 
+                            // Check if it's a Google Maps URL
+                            elseif (filter_var($mapEmbed, FILTER_VALIDATE_URL)) {
+                                $mapUrl = $mapEmbed;
+                                
+                                // Check if it's a Google Maps share link
+                                if (strpos($mapEmbed, 'maps.app.goo.gl') !== false) {
+                                    // Convert short URL to embed URL
+                                    $mapEmbed = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d106.79727831532822!3d-6.597005365229759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5d9c8b5b5b5%3A0x5b4b5b5b5b5b5b5b!2sSMKN%204%20Bogor!5e0!3m2!1sen!2sid!4v1678886405123!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+                                } else if (strpos($mapEmbed, 'google.com/maps') !== false) {
+                                    // For regular Google Maps URLs, convert to embed
+                                    // Extract coordinates from URL if possible
+                                    $embedUrl = str_replace('/maps', '/maps/embed', $mapEmbed);
+                                    $mapEmbed = '<iframe src="' . $embedUrl . '" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+                                } else {
+                                    // Untuk URL lain yang tidak dikenali, pakai embed default
+                                    $mapEmbed = $defaultEmbed;
+                                    $mapUrl = $defaultUrl;
+                                }
+                            }
+                            // If it's plain text coordinates, try to convert to map
+                            elseif ($coords = parseCoordinates($mapEmbed)) {
+                                // It's coordinates, convert to Google Maps embed
+                                $lat = $coords['lat'];
+                                $lng = $coords['lng'];
+                                $mapEmbed = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.358216505442!2d' . $lng . '!3d' . $lat . '!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z' . $lat . 'N%20' . $lng . 'E!5e0!3m2!1sen!2s!4v1678886405123!5m2!1sen!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
+                                $mapUrl = 'https://www.google.com/maps?q=' . $lat . ',' . $lng;
+                            }
+                            // If it's neither, treat as plain text
+                            else {
+                                // Jika bukan iframe, bukan URL valid, dan bukan koordinat,
+                                // fallback ke embed default agar peta tetap muncul
+                                $mapEmbed = $defaultEmbed;
+                                $mapUrl = $defaultUrl;
+                            }
+                        @endphp
+                        <a href="{{ $mapUrl }}" target="_blank" class="block map-link">
+                            {!! $mapEmbed !!}
+                            <div class="map-overlay">
+                                <i class="fas fa-external-link-alt"></i>
+                                <span>Lihat di Google Maps</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>

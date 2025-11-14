@@ -25,7 +25,6 @@
             $groups = [
                 'home' => ['icon' => 'fa-home', 'label' => 'Beranda', 'color' => 'blue', 'description' => 'Konten halaman utama'],
                 'profile' => ['icon' => 'fa-building', 'label' => 'Profil', 'color' => 'teal', 'description' => 'Informasi profil sekolah'],
-                'vision_mission' => ['icon' => 'fa-bullseye', 'label' => 'Visi & Misi', 'color' => 'indigo', 'description' => 'Visi dan misi sekolah'],
                 'contact' => ['icon' => 'fa-address-book', 'label' => 'Kontak', 'color' => 'green', 'description' => 'Alamat, telepon, email, maps'],
                 'school_info' => ['icon' => 'fa-info-circle', 'label' => 'Informasi Sekolah', 'color' => 'purple', 'description' => 'Program keahlian, fasilitas, dan prestasi sekolah', 'route' => 'site-settings.group', 'route_params' => ['group' => 'school_info']],
                 'agenda' => ['icon' => 'fa-calendar', 'label' => 'Agenda', 'color' => 'yellow', 'description' => 'Jadwal dan agenda kegiatan', 'route' => 'agenda.index'],

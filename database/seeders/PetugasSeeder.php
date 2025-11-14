@@ -17,22 +17,22 @@ class PetugasSeeder extends Seeder
         // Hapus data lama hanya jika belum ada data sama sekali
         // Cek apakah sudah ada petugas
         $existingPetugas = Petugas::count();
-        $existingAdminUser = User::where('email', 'admin@galeri-edu.com')->count();
-        $existingStaffUser = User::where('email', 'siti@galeri-edu.com')->count();
+        $existingAdminUser = User::whereIn('email', ['admin@galeri-edu.com', 'admin@gmail.com'])->count();
+        $existingStaffUser = User::whereIn('email', ['siti@galeri-edu.com', 'siti@gmail.com'])->count();
         
         // Jika belum ada data sama sekali, maka buat data default
         if ($existingPetugas == 0 && $existingAdminUser == 0 && $existingStaffUser == 0) {
             // Buat data petugas (admin)
             Petugas::create([
                 'username' => 'admin',
-                'email' => 'admin@galeri-edu.com',
+                'email' => 'admin@gmail.com',
                 'password' => Hash::make('admin123'),
             ]);
 
             // Buat data petugas (staff)
             Petugas::create([
                 'username' => 'staff',
-                'email' => 'siti@galeri-edu.com',
+                'email' => 'siti@gmail.com',
                 'password' => Hash::make('staff123'),
             ]);
 
@@ -52,7 +52,7 @@ class PetugasSeeder extends Seeder
 
             User::create([
                 'name' => 'Kepala Sekolah',
-                'email' => 'kepsek@galeri-edu.com',
+                'email' => 'kepsek@gmail.com',
                 'password' => Hash::make('kepsek123'),
             ]);
         }

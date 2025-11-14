@@ -154,10 +154,195 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
+
+        /* Login dropdown (guest) */
+        .login-dropdown {
+            position: relative;
+        }
+
+        .login-dropdown-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .login-dropdown-btn i {
+            font-size: 13px;
+        }
+
+        .login-dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 115%;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(15,23,42,0.18);
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            width: 240px;
+            z-index: 40;
+            display: none;
+        }
+
+        .login-dropdown-menu.show {
+            display: block;
+        }
+
+        .login-option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 8px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .login-option-item:hover {
+            background: #f3f4ff;
+        }
+
+        .login-option-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .login-option-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .login-option-sub {
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+
+        /* User profile dropdown */
+        .user-profile {
+            position: relative;
+        }
+
+        .user-profile-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .user-profile-toggle:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: #3b82f6;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-profile-toggle i {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 120%;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(15,23,42,0.18);
+            border: 1px solid #e5e7eb;
+            padding: 12px 14px;
+            width: 230px;
+            z-index: 50;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-info-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .user-info-email {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 2px;
+            word-break: break-all;
+        }
+
+        .user-dropdown-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 10px 0;
+        }
+
+        .user-logout-btn {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 10px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-logout-btn:hover {
+            background: #dc2626;
+            box-shadow: 0 6px 14px rgba(220,38,38,0.4);
+        }
         
         /* Main Content */
         .main-content {
-            padding: 60px 0;
+            padding: 0 0 60px;
         }
         
         .hero-section {
@@ -194,7 +379,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8); /* Dark overlay for better text visibility */
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.65), rgba(30, 64, 175, 0.65));
             z-index: -1;
         }
         
@@ -213,8 +398,8 @@
         }
         
         .hero-btn {
-            background: white;
-            color: #3b82f6;
+            background: transparent;
+            color: #ffffff;
             padding: 14px 32px;
             border-radius: 10px;
             text-decoration: none;
@@ -222,12 +407,140 @@
             font-size: 16px;
             transition: all 0.3s ease;
             display: inline-block;
+            border: 2px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .hero-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Card sambutan kepala sekolah */
+        .principal-card {
+            max-width: 1180px;
+            margin: 0 auto 40px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            padding: 32px 40px;
+            align-items: center;
+        }
+
+        .principal-photo-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .principal-photo {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+        }
+
+        .principal-content-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .principal-quote {
+            font-size: 0.98rem;
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        .principal-quote b {
+            color: #111827;
+        }
+
+        .principal-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .principal-role {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .principal-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 20px 20px 24px;
+            }
+
+            .principal-photo {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        /* Quick Access Section */
+        .quick-access-section {
+            max-width: 1180px;
+            margin: 0 auto 40px;
+            text-align: center;
+        }
+
+        .quick-access-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .quick-access-subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 18px;
+        }
+
+        .quick-access-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .quick-btn {
+            background: transparent;
+            color: #2563eb;
+            padding: 10px 22px;
+            border-radius: 999px;
+            border: 2px solid rgba(37, 99, 235, 0.5);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+            box-shadow: 0 3px 8px rgba(15,23,42,0.12);
+        }
+
+        .quick-btn i {
+            font-size: 1rem;
+        }
+
+        .quick-btn:hover {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(37,99,235,0.28);
         }
         
         .section-title {
@@ -341,18 +654,26 @@
         }
         
         .btn-outline-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 999px;
             border: 2px solid #3b82f6;
-            color: #3b82f6;
-            padding: 10px 20px; /* Increased padding */
-            border-radius: 10px; /* Increased border radius */
+            background: #3b82f6;
+            color: #ffffff;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(59,130,246,0.25);
         }
         
         .btn-outline-primary:hover {
-            background: #3b82f6;
-            color: white;
+            background: #2563eb;
+            border-color: #2563eb;
+            box-shadow: 0 6px 12px rgba(37,99,235,0.3);
+            transform: translateY(-1px);
         }
         
         /* Agenda Section */
@@ -488,6 +809,20 @@
             
             .hero-subtitle {
                 font-size: 1rem;
+            }
+        }
+
+        /* Full-width hero untuk layar desktop */
+        @media (min-width: 992px) {
+            .hero-section {
+                margin-left: -40px;
+                margin-right: -40px;
+                border-radius: 0;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }
         }
         
@@ -695,6 +1030,58 @@
                     <li><a href="{{ route('user.informasi') }}">Informasi</a></li>
                     <li><a href="{{ route('user.agenda') }}">Agenda</a></li>
                 </ul>
+                @guest
+                    <div class="login-dropdown">
+                        <button type="button" class="login-dropdown-btn" id="loginDropdownToggle">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                            <i class="fas fa-chevron-down" style="font-size:11px;"></i>
+                        </button>
+                        <div class="login-dropdown-menu" id="loginDropdownMenu">
+                            <div style="font-size:0.8rem;color:#6b7280;margin-bottom:6px;">Pilih jenis akun:</div>
+                            <a href="{{ route('login') }}" class="login-option-item">
+                                <div class="login-option-icon" style="background:#dbeafe;color:#2563eb;">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <div class="login-option-title">Login Admin / Petugas</div>
+                                    <div class="login-option-sub">Untuk pengelola galeri dan konten.</div>
+                                </div>
+                            </a>
+                            <a href="{{ route('login') }}" class="login-option-item">
+                                <div class="login-option-icon" style="background:#dcfce7;color:#16a34a;">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <div class="login-option-title">Login User</div>
+                                    <div class="login-option-sub">Untuk siswa/guru yang sudah daftar.</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    <div class="user-profile">
+                        <button type="button" class="user-profile-toggle">
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                            </div>
+                            <span class="user-name">{{ Auth::user()->name ?? 'User' }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown">
+                            <div class="user-info-name">{{ Auth::user()->name ?? 'User' }}</div>
+                            <div class="user-info-email">{{ Auth::user()->email ?? '' }}</div>
+                            <div class="user-dropdown-divider"></div>
+                            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                                @csrf
+                                <button type="submit" class="user-logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endguest
             </div>
         </nav>
     </header>
@@ -706,11 +1093,52 @@
             <section class="hero-section">
                 <div class="hero-background"></div>
                 <div class="hero-overlay"></div>
-                <h1 class="hero-title">Selamat Datang di SMKN 4 BOGOR</h1>
-                <p class="hero-subtitle">Mengembangkan potensi siswa melalui pendidikan berkualitas dan fasilitas modern</p>
-                <a href="{{ route('user.gallery') }}" class="hero-btn">
-                    <i class="fas fa-images"></i> Lihat Galeri
+                <h1 class="hero-title">{{ \App\Models\SiteSetting::get('home_hero_title', 'Selamat Datang di SMKN 4 BOGOR') }}</h1>
+                <p class="hero-subtitle">{{ \App\Models\SiteSetting::get('home_hero_subtitle', 'Mengembangkan potensi siswa melalui pendidikan berkualitas dan fasilitas modern') }}</p>
+                <a href="#principal-welcome" class="hero-btn">
+                    <i class="fas fa-images"></i> {{ \App\Models\SiteSetting::get('home_hero_button_text', 'Lihat Selengkapnya') }}
                 </a>
+            </section>
+
+            <!-- Principal Welcome Card -->
+            <section id="principal-welcome" class="principal-card">
+                <div class="principal-photo-wrapper">
+                    <img src="{{ asset('images/kepsek.png') }}" alt="Kepala Sekolah" class="principal-photo">
+                </div>
+                <div class="principal-content">
+                    <h2 class="principal-content-title">{{ \App\Models\SiteSetting::get('home_principal_title', 'Selamat Datang') }}</h2>
+                    <p class="principal-quote">
+                        {{ \App\Models\SiteSetting::get('home_principal_quote', 'Kami percaya bahwa setiap siswa memiliki potensi luar biasa. Misi kami adalah mendampingi mereka untuk menemukan dan mengembangkan kemampuan terbaiknya. Mari jadikan setiap hari di sekolah sebagai langkah menuju masa depan yang sukses dan berkarakter.') }}
+                    </p>
+                    <div>
+                        <div class="principal-name">{{ \App\Models\SiteSetting::get('home_principal_name', 'Drs. Mulyamurpri Hartono, M.SI') }}</div>
+                        <div class="principal-role">{{ \App\Models\SiteSetting::get('home_principal_role', 'Kepala Sekolah SMKN 4 Bogor') }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Access Section -->
+            <section class="quick-access-section">
+                <h2 class="quick-access-title">Akses Cepat</h2>
+                <p class="quick-access-subtitle">Masuk dengan cepat ke fitur utama SMKN 4 Bogor.</p>
+                <div class="quick-access-actions">
+                    <a href="{{ route('user.gallery') }}" class="quick-btn">
+                        <i class="fas fa-images"></i>
+                        <span>Galeri</span>
+                    </a>
+                    <a href="{{ route('user.informasi') }}" class="quick-btn">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Informasi</span>
+                    </a>
+                    <a href="{{ route('user.agenda') }}" class="quick-btn">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Agenda</span>
+                    </a>
+                    <a href="{{ route('user.informasi') }}#contact" class="quick-btn">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Kontak & Lokasi</span>
+                    </a>
+                </div>
             </section>
 
             <!-- Latest Gallery Section -->
@@ -747,35 +1175,9 @@
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="{{ route('user.gallery') }}" class="btn-outline-primary">
-                        <i class="fas fa-arrow-right"></i> Lihat Semua Galeri
-                    </a>
-                </div>
-            </section>
-
-            <!-- Latest Agenda Section -->
-            <section class="agenda-section">
-                <h2 class="section-title">Agenda Terbaru</h2>
-                <div class="agenda-grid">
-                    @forelse($latestAgendas as $agenda)
-                    <div class="agenda-card">
-                        <div class="agenda-date">{{ $agenda->date_label }}</div>
-                        <h3 class="agenda-title">{{ $agenda->title }}</h3>
-                        <p class="agenda-description">{{ $agenda->description }}</p>
-                        <div class="agenda-time">
-                            <i class="fas fa-clock"></i>
-                            <span>{{ $agenda->time }}</span>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="col-span-full text-center py-10">
-                        <p class="text-gray-500">Belum ada agenda tersedia.</p>
-                    </div>
-                    @endforelse
-                </div>
-                <div style="text-align: center; margin-top: 30px;">
-                    <a href="{{ route('user.agenda') }}" class="btn-outline-primary">
-                        <i class="fas fa-arrow-right"></i> Lihat Semua Agenda
+                    <a href="{{ route('user.gallery') }}" class="quick-btn">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>Lihat Semua Galeri</span>
                     </a>
                 </div>
             </section>
@@ -840,5 +1242,33 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const profileToggle = document.querySelector('.user-profile-toggle');
+            const profileDropdown = document.querySelector('.user-dropdown');
+            const loginToggle = document.getElementById('loginDropdownToggle');
+            const loginMenu = document.getElementById('loginDropdownMenu');
+
+            if (profileToggle && profileDropdown) {
+                profileToggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('show');
+                });
+            }
+
+            if (loginToggle && loginMenu) {
+                loginToggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    loginMenu.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', function () {
+                if (profileDropdown) profileDropdown.classList.remove('show');
+                if (loginMenu) loginMenu.classList.remove('show');
+            });
+        });
+    </script>
 </body>
 </html>

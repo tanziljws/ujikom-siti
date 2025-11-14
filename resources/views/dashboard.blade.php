@@ -93,11 +93,11 @@
         </div>
     </div>
 
-    <!-- Popularitas -->
+    <!-- Laporan -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Halaman</p>
+                <p class="text-sm font-medium text-gray-600">Laporan</p>
                 <p class="text-3xl font-bold text-gray-900">{{ $totalPages }}</p>
                 <div class="flex items-center mt-2">
                     <span class="text-green-500 text-sm font-medium">+3%</span>

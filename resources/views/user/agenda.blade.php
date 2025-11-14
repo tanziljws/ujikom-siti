@@ -128,27 +128,132 @@
             color: white;
             background: #3b82f6;
         }
+
+        .login-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .login-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* User profile dropdown (sama seperti dashboard) */
+        .user-profile { position: relative; }
+        .user-profile-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+        .user-profile-toggle:hover { background: #eef2ff; border-color: #c7d2fe; }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 999px; background: #3b82f6; color: #fff;
+            display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600;
+        }
+        .user-name { max-width: 120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .user-profile-toggle i { font-size:11px; color:#6b7280; }
+        .user-dropdown {
+            position:absolute; right:0; top:120%; background:#fff; border-radius:14px;
+            box-shadow:0 10px 25px rgba(15,23,42,0.18); border:1px solid #e5e7eb;
+            padding:12px 14px; width:230px; z-index:50; display:none;
+        }
+        .user-dropdown.show { display:block; }
+        .user-info-name { font-size:0.95rem; font-weight:600; color:#111827; }
+        .user-info-email { font-size:0.8rem; color:#6b7280; margin-top:2px; word-break:break-all; }
+        .user-dropdown-divider { height:1px; background:#e5e7eb; margin:10px 0; }
+        .user-logout-btn {
+            width:100%; border:none; border-radius:8px; padding:9px 10px; background:#ef4444;
+            color:#fff; font-size:0.9rem; font-weight:600; display:inline-flex; align-items:center;
+            justify-content:center; gap:6px; cursor:pointer; transition:all 0.2s ease;
+        }
+        .user-logout-btn:hover { background:#dc2626; box-shadow:0 6px 14px rgba(220,38,38,0.4); }
+
+        .login-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .login-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
         
         /* Main Content */
         .main-content {
-            padding: 60px 0;
+            padding: 0 0 60px;
         }
         
         .page-header {
+            position: relative;
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px; /* disamakan dengan galeri */
+            padding: 60px 20px;  /* ditambah agar tidak terlalu tipis */
+            border-radius: 0 0 20px 20px;
+            color: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../../images/DJI_0148.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.65), rgba(30, 64, 175, 0.65));
+            z-index: -1;
         }
         
         .page-title {
             font-size: 2rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #ffffff;
             margin-bottom: 15px;
         }
         
         .page-subtitle {
             font-size: 1.1rem;
-            color: #64748b;
+            color: #e5e7eb;
         }
         
         .agenda-grid {
@@ -161,10 +266,14 @@
         .agenda-card {
             background: white;
             border-radius: 16px;
-            padding: 30px;
+            padding: 22px 24px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            min-height: 210px;
         }
         
         .agenda-card:hover {
@@ -173,14 +282,14 @@
         }
         
         .agenda-date {
-            background: linear-gradient(135deg, #3b82f6, #1e40af);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
+            background: transparent;
+            color: #6b7280;
+            padding: 0;
+            border-radius: 0;
             font-weight: 600;
             font-size: 14px;
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .agenda-title {
@@ -193,7 +302,11 @@
         .agenda-description {
             color: #64748b;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* tampilkan ringkas dulu */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         .agenda-time {
@@ -202,6 +315,12 @@
             gap: 8px;
             color: #3b82f6;
             font-weight: 500;
+        }
+
+        /* Saat kartu diklik (expanded), tampilkan deskripsi penuh */
+        .agenda-card.expanded .agenda-description {
+            -webkit-line-clamp: unset;
+            overflow: visible;
         }
         
         .agenda-time i {
@@ -436,7 +555,18 @@
                         <li><a href="{{ route('user.informasi') }}">Informasi</a></li>
                         <li><a href="{{ route('user.agenda') }}" class="active">Agenda</a></li>
                     </ul>
-                    <!-- Removed login button as per user request -->
+                    @guest
+                        <a href="{{ route('login') }}" class="login-btn">Login</a>
+                    @else
+                        <div class="user-profile">
+                            <div class="user-profile-toggle" style="cursor: default;">
+                                <div class="user-avatar">
+                                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                                </div>
+                                <span class="user-name">{{ Auth::user()->name ?? 'User' }}</span>
+                            </div>
+                        </div>
+                    @endguest
                 </div>
         </nav>
     </header>
@@ -525,6 +655,18 @@
         </div>
     </footer>
     
+    <!-- Script interaksi agenda: klik kartu untuk melihat deskripsi lengkap -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var cards = document.querySelectorAll('.agenda-card');
+            cards.forEach(function (card) {
+                card.addEventListener('click', function () {
+                    card.classList.toggle('expanded');
+                });
+            });
+        });
+    </script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

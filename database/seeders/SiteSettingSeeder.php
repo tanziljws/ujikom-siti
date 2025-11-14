@@ -32,7 +32,7 @@ class SiteSettingSeeder extends Seeder
                 'key' => 'home_hero_subtitle',
                 'label' => 'Subjudul Beranda',
                 'type' => 'textarea',
-                'value' => 'Sekolah Menengah Kejuruan Negeri 4 Bogor siap mencetak generasi yang berkarakter, berkompeten, dan berdaya saing global.',
+                'value' => 'Mengembangkan potensi siswa melalui pendidikan berkualitas dan fasilitas modern.',
                 'group' => 'home',
                 'description' => 'Teks subjudul di bawah judul utama',
                 'order' => 2
@@ -45,6 +45,51 @@ class SiteSettingSeeder extends Seeder
                 'group' => 'home',
                 'description' => 'Gambar latar belakang untuk bagian hero/header',
                 'order' => 3
+            ],
+            [
+                'key' => 'home_principal_title',
+                'label' => 'Judul Sambutan Kepala Sekolah',
+                'type' => 'text',
+                'value' => 'Selamat Datang',
+                'group' => 'home',
+                'description' => 'Judul pada kartu sambutan kepala sekolah di beranda',
+                'order' => 4
+            ],
+            [
+                'key' => 'home_principal_quote',
+                'label' => 'Teks Sambutan Kepala Sekolah',
+                'type' => 'textarea',
+                'value' => 'Kami percaya bahwa setiap siswa memiliki potensi luar biasa. Misi kami adalah mendampingi mereka untuk menemukan dan mengembangkan kemampuan terbaiknya. Mari jadikan setiap hari di sekolah sebagai langkah menuju masa depan yang sukses dan berkarakter.',
+                'group' => 'home',
+                'description' => 'Paragraf sambutan kepala sekolah di beranda',
+                'order' => 5
+            ],
+            [
+                'key' => 'home_principal_name',
+                'label' => 'Nama Kepala Sekolah',
+                'type' => 'text',
+                'value' => 'Drs. Mulyamurpri Hartono, M.SI',
+                'group' => 'home',
+                'description' => 'Nama kepala sekolah yang ditampilkan di beranda',
+                'order' => 6
+            ],
+            [
+                'key' => 'home_principal_role',
+                'label' => 'Jabatan Kepala Sekolah',
+                'type' => 'text',
+                'value' => 'Kepala Sekolah SMKN 4 Bogor',
+                'group' => 'home',
+                'description' => 'Jabatan kepala sekolah yang ditampilkan di beranda',
+                'order' => 7
+            ],
+            [
+                'key' => 'home_hero_button_text',
+                'label' => 'Teks Tombol Hero',
+                'type' => 'text',
+                'value' => 'Lihat Selengkapnya',
+                'group' => 'home',
+                'description' => 'Teks pada tombol di bagian hero beranda',
+                'order' => 8
             ]
         ];
 

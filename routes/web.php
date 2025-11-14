@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\GalleryReportController;
 use App\Http\Controllers\FotoController;
+use App\Models\User;
 
 // -------------------------------
 // PUBLIC ROUTES (Tanpa Login)
@@ -47,7 +48,10 @@ Route::get('/user/agenda', function () {
 })->name('user.agenda');
 
 Route::get('/user/informasi', function () {
-    $informasiItems = \App\Models\Informasi::where('status', 'aktif')->orderBy('order')->get();
+    $informasiItems = \App\Models\Informasi::where('status', 'aktif')
+        ->orderBy('order')
+        ->limit(5)
+        ->get();
     return view('user.informasi', compact('informasiItems'));
 })->name('user.informasi');
 
@@ -61,13 +65,24 @@ Route::get('/download/{token}', [DownloadController::class, 'download'])->name('
 
 // Foto routes
 Route::post('/foto/{id}/toggle-like', [FotoController::class, 'toggleLike'])->name('foto.toggle-like');
+Route::post('/foto/{id}/toggle-dislike', [FotoController::class, 'toggleDislike'])->name('foto.toggle-dislike');
 
 // -------------------------------
 // AUTH ROUTES (Login/Logout)
 // -------------------------------
 Route::middleware(['guest'])->group(function () {
+    // Halaman pilihan login (admin/user/register)
+    Route::get('/auth/choose', function () {
+        return view('auth.choose-login');
+    })->name('login.choose');
+
+    // Form login utama (dipakai untuk admin & user)
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    // Register user baru
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -76,9 +91,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ADMIN & PETUGAS ROUTES (Harus Login)
 // -------------------------------
 // -------------------------------
-// ADMIN & PETUGAS ROUTES (Harus Login)
+// ADMIN & PETUGAS ROUTES (Harus Login sebagai petugas/admin)
 // -------------------------------
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:petugas'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -120,4 +135,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{setting}', [\App\Http\Controllers\SiteSettingController::class, 'update'])->name('update');
         Route::put('/', [\App\Http\Controllers\SiteSettingController::class, 'updateBulk'])->name('update.bulk');
     });
+
+    // Daftar user terdaftar (read-only)
+    Route::get('/admin/users', function () {
+        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.users.index', compact('users'));
+    })->name('admin.users.index');
 });

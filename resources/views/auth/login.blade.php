@@ -134,26 +134,60 @@
             justify-content: center;
         }
         
+        .login-right-inner {
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
         .login-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 28px;
         }
         
         .login-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
-        .login-title::after {
-            content: '';
+        .auth-tabs {
+            display: inline-flex;
+            border-radius: 999px;
+            background: #e5e7eb;
+            padding: 3px;
+        }
+        
+        .auth-tab {
+            padding: 6px 22px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #4b5563;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        
+        .auth-tab.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(37,99,235,0.45);
+        }
+        
+        .auth-tab:not(.active):hover {
+            color: #111827;
+        }
+
+        .auth-panel {
+            display: none;
+        }
+
+        .auth-panel.active {
             display: block;
-            width: 60px;
-            height: 4px;
-            background: #3b82f6;
-            margin: 15px auto 0;
-            border-radius: 2px;
         }
         
         /* Form Styles */
@@ -358,8 +392,13 @@
 
         <!-- Right Side - Login Form -->
         <div class="login-right">
+            <div class="login-right-inner">
             <div class="login-header">
                 <h2 class="login-title">Sign In</h2>
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab active" data-panel="login-panel">Login</button>
+                    <button type="button" class="auth-tab" data-panel="register-panel">Daftar</button>
+                </div>
             </div>
 
             @if(session('error'))
@@ -368,51 +407,160 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                
-                <!-- Email Field -->
-                <div class="form-group">
-                    <input type="text" 
-                           name="email" 
-                           value="{{ old('email') }}"
-                           class="form-input"
-                           placeholder="Email atau Username..."
-                           required autocomplete="username">
-                    @error('email')
-                        <p class="input-error">{{ $message }}</p>
-                    @enderror
-                </div>
+            <!-- Panel Login -->
+            <div id="login-panel" class="auth-panel active">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <input type="text" 
+                               name="email" 
+                               value="{{ old('email') }}"
+                               class="form-input"
+                               placeholder="Email atau Username..."
+                               required autocomplete="username">
+                        @error('email')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Password Field -->
-                <div class="form-group">
-                    <input type="password" 
-                           name="password" 
-                           class="form-input"
-                           placeholder="Enter Password..."
-                           required>
-                    @error('password')
-                        <p class="input-error">{{ $message }}</p>
-                    @enderror
-                </div>
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <input type="password" 
+                               name="password" 
+                               class="form-input"
+                               placeholder="Enter Password..."
+                               required>
+                        @error('password')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Remember Me -->
-                <div class="checkbox-group">
-                    <input type="checkbox" name="remember" id="remember">
-                    <label for="remember">Ingat saya</label>
-                </div>
+                    <!-- Remember Me -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="remember" id="remember">
+                        <label for="remember">Ingat saya</label>
+                    </div>
 
-                <!-- Login Button -->
-                <button type="submit" class="btn-login">
-                    Login
-                </button>
-            </form>
+                    <!-- Captcha sederhana -->
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display:block; font-size:14px; font-weight:600; color:#374151; margin-bottom:6px;">Verifikasi Keamanan</label>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                            <div style="background:#eff6ff; border-radius:999px; padding:8px 14px; font-weight:600; color:#1d4ed8; font-size:0.95rem;">
+                                {{ $a ?? 0 }} + {{ $b ?? 0 }} = ?
+                            </div>
+                            <input type="number" name="captcha" class="form-input" style="max-width:130px;" placeholder="Jawaban" required>
+                        </div>
+                        @error('captcha')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Login Button -->
+                    <button type="submit" class="btn-login">
+                        Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- Panel Register (di halaman yang sama) -->
+            <div id="register-panel" class="auth-panel">
+                <form method="POST" action="{{ route('register.submit') }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <input id="reg-name" type="text" name="name" class="form-input" value="{{ old('name') }}" placeholder="Nama Lengkap" autocomplete="name">
+                        @error('name')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-input" value="{{ old('email') }}" placeholder="Email" autocomplete="email">
+                        @error('email')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-input" placeholder="Password" autocomplete="new-password">
+                        @error('password')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" name="password_confirmation" class="form-input" placeholder="Konfirmasi Password" autocomplete="new-password">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display:block; font-size:14px; font-weight:600; color:#374151; margin-bottom:6px;">Verifikasi Keamanan</label>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                            <div style="background:#eff6ff; border-radius:999px; padding:8px 14px; font-weight:600; color:#1d4ed8; font-size:0.95rem;">
+                                {{ $a ?? 0 }} + {{ $b ?? 0 }} = ?
+                            </div>
+                            <input type="number" name="captcha" class="form-input" style="max-width:130px;" placeholder="Jawaban" required>
+                        </div>
+                        @error('captcha')
+                            <p class="input-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        Daftar &amp; Masuk
+                    </button>
+                </form>
+            </div>
+
+            
         </div>
-    </div>
 
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; {{ date('Y') }} SMKN 4 BOGOR. Semua hak dilindungi.</p>
     </footer>
+
+    <script>
+        function switchAuthPanel(panelId) {
+            const panels = document.querySelectorAll('.auth-panel');
+            const tabs = document.querySelectorAll('.auth-tab');
+            const title = document.querySelector('.login-title');
+
+            panels.forEach(p => p.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+
+            const targetPanel = document.getElementById(panelId);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+
+            tabs.forEach(t => {
+                if (t.getAttribute('data-panel') === panelId) {
+                    t.classList.add('active');
+                }
+            });
+
+            if (title) {
+                if (panelId === 'login-panel') {
+                    title.textContent = 'Sign In';
+                } else if (panelId === 'register-panel') {
+                    title.textContent = 'Sign Up';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.auth-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const panel = this.getAttribute('data-panel');
+                    if (panel) {
+                        switchAuthPanel(panel);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
