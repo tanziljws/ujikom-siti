@@ -686,10 +686,11 @@ Route::get('/', function () {
 })->name('user.dashboard');
 
 Route::get('/user/gallery', function () {
+    // Initialize variables
+    $galeri = collect([]);
+    $kategoris = collect([]);
+    
     try {
-        $galeri = collect([]);
-        $kategoris = collect([]);
-        
         // Query galleries dengan error handling
         try {
             $hasGalery = false;
@@ -703,27 +704,54 @@ Route::get('/user/gallery', function () {
             
             if ($hasGalery && $hasPosts) {
                 try {
+                    // Query dengan error handling lebih detail
                     $galeri = \App\Models\galery::with(['post.kategori', 'fotos'])
                         ->where('status', 'aktif')
-                        ->get()
-                        ->filter(function($gallery) {
-                            return $gallery->post !== null && 
-                                   $gallery->fotos && 
-                                   $gallery->fotos->count() > 0;
-                        })
-                        ->sortByDesc(function($gallery) {
+                        ->get();
+                    
+                    \Log::info('Gallery query result (before filter)', [
+                        'count' => $galeri->count(),
+                    ]);
+                    
+                    // Filter galleries yang punya post dan foto
+                    $galeri = $galeri->filter(function($gallery) {
+                        try {
+                            $hasPost = $gallery->post !== null;
+                            $hasFotos = $gallery->fotos && $gallery->fotos->count() > 0;
+                            return $hasPost && $hasFotos;
+                        } catch (\Exception $filterError) {
+                            \Log::warning('Error filtering gallery ' . $gallery->id . ': ' . $filterError->getMessage());
+                            return false;
+                        }
+                    });
+                    
+                    // Sort by created_at
+                    $galeri = $galeri->sortByDesc(function($gallery) {
+                        try {
                             return $gallery->post->created_at ?? now();
-                        })
-                        ->values();
+                        } catch (\Exception $e) {
+                            return now();
+                        }
+                    })->values();
                     
                     // Debug: Log gallery count
-                    \Log::info('Gallery page loaded', [
+                    \Log::info('Gallery page loaded (after filter)', [
                         'gallery_count' => $galeri->count(),
+                        'sample_ids' => $galeri->take(5)->pluck('id')->toArray(),
                     ]);
                 } catch (\Exception $queryError) {
-                    \Log::error('Error querying galleries: ' . $queryError->getMessage());
+                    \Log::error('Error querying galleries: ' . $queryError->getMessage(), [
+                        'trace' => $queryError->getTraceAsString(),
+                        'file' => $queryError->getFile(),
+                        'line' => $queryError->getLine(),
+                    ]);
                     $galeri = collect([]);
                 }
+            } else {
+                \Log::warning('Gallery query skipped - tables missing', [
+                    'has_galery' => $hasGalery,
+                    'has_posts' => $hasPosts,
+                ]);
             }
         } catch (\Exception $e) {
             \Log::error('Error loading galleries: ' . $e->getMessage());
@@ -751,7 +779,18 @@ Route::get('/user/gallery', function () {
         \Log::info('Rendering gallery page', [
             'gallery_count' => $galeri->count(),
             'kategori_count' => $kategoris->count(),
+            'gallery_type' => get_class($galeri),
+            'is_collection' => $galeri instanceof \Illuminate\Support\Collection,
         ]);
+        
+        // Pastikan $galeri adalah collection
+        if (!($galeri instanceof \Illuminate\Support\Collection)) {
+            \Log::warning('$galeri is not a collection, converting...', [
+                'type' => gettype($galeri),
+                'class' => get_class($galeri),
+            ]);
+            $galeri = collect($galeri);
+        }
         
         return view('user.gallery', compact('galeri', 'kategoris'));
     } catch (\Throwable $e) {

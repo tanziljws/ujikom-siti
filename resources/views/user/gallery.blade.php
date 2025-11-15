@@ -1045,7 +1045,21 @@
                     <i class="fas fa-images" style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;"></i>
                     <h3 style="font-size: 24px; margin-bottom: 10px; color: #1e293b;">Tidak ada galeri tersedia</h3>
                     <p style="font-size: 16px;">Belum ada galeri foto yang dapat ditampilkan saat ini.</p>
-                    <p style="font-size: 14px; margin-top: 10px; color: #94a3b8;">Debug: Gallery count = {{ $galeri->count() }}</p>
+                    <div style="font-size: 14px; margin-top: 20px; padding: 20px; background: #f1f5f9; border-radius: 8px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <p style="color: #64748b; margin-bottom: 10px;"><strong>Debug Info:</strong></p>
+                        @php
+                            $debugCount = isset($galeri) ? $galeri->count() : 'Variable not set';
+                            $debugType = isset($galeri) ? get_class($galeri) : 'N/A';
+                            $debugIsCollection = isset($galeri) && $galeri instanceof \Illuminate\Support\Collection ? 'Yes' : 'No';
+                            $debugFirstId = (isset($galeri) && $galeri->count() > 0) ? $galeri->first()->id : 'N/A';
+                        @endphp
+                        <p style="color: #475569; margin: 5px 0;">Gallery count: {{ $debugCount }}</p>
+                        <p style="color: #475569; margin: 5px 0;">Gallery type: {{ $debugType }}</p>
+                        <p style="color: #475569; margin: 5px 0;">Is collection: {{ $debugIsCollection }}</p>
+                        @if($debugFirstId !== 'N/A')
+                            <p style="color: #475569; margin: 5px 0;">First gallery ID: {{ $debugFirstId }}</p>
+                        @endif
+                    </div>
                 </div>
                 @endforelse
             </div>
