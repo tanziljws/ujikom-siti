@@ -1026,7 +1026,7 @@
         <nav class="navbar">
             <div class="branding">
                 <div class="brand-icon">
-                    <img src="{{ asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo">
+                    <img src="{{ secure_asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo">
                 </div>
                 <div class="brand-text">
                     <h1>SMKN 4</h1>
@@ -1113,7 +1113,7 @@
                     }
                     
                     // Fallback image path
-                    $fallbackImage = asset('images/DJI_0148.JPG');
+                    $fallbackImage = secure_asset('images/DJI_0148.JPG');
                 @endphp
                 
                 @if($heroImage && !empty($heroImage))
@@ -1124,9 +1124,9 @@
                         $imageUrl = '';
                         
                         if (file_exists($storagePath)) {
-                            $imageUrl = asset('storage/' . $heroImage);
+                            $imageUrl = secure_asset('storage/' . $heroImage);
                         } elseif (file_exists($publicPath)) {
-                            $imageUrl = asset('images/' . $heroImage);
+                            $imageUrl = secure_asset('images/' . $heroImage);
                         } elseif (strpos($heroImage, 'http') === 0) {
                             $imageUrl = $heroImage; // Full URL
                         } else {
@@ -1184,7 +1184,7 @@
             <!-- Principal Welcome Card -->
             <section id="principal-welcome" class="principal-card">
                 <div class="principal-photo-wrapper">
-                    <img src="{{ asset('images/kepsek.png') }}" alt="Kepala Sekolah" class="principal-photo">
+                    <img src="{{ secure_asset('images/kepsek.png') }}" alt="Kepala Sekolah" class="principal-photo">
                 </div>
                 <div class="principal-content">
                     <h2 class="principal-content-title">{{ \App\Models\SiteSetting::get('home_principal_title', 'Selamat Datang') }}</h2>
@@ -1230,7 +1230,7 @@
                         @forelse($latestGalleries as $gallery)
                         <div class="gallery-card">
                             @if($gallery->fotos && $gallery->fotos->count() > 0)
-                                <img src="{{ asset('uploads/galeri/' . $gallery->fotos->first()->file) }}" alt="{{ $gallery->post->judul ?? 'Gallery Image' }}" class="gallery-image">
+                                <img src="{{ secure_asset('uploads/galeri/' . $gallery->fotos->first()->file) }}" alt="{{ $gallery->post->judul ?? 'Gallery Image' }}" class="gallery-image">
                                 <div class="gallery-overlay">
                                     <div class="gallery-info">
                                         <h3 class="gallery-title">{{ $gallery->post->judul ?? 'Untitled' }}</h3>
@@ -1275,7 +1275,7 @@
                 <div class="footer-branding">
                     <div class="branding">
                         <div class="brand-icon">
-                            <img src="{{ asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo">
+                            <img src="{{ secure_asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo">
                         </div>
                         <div class="brand-text">
                             <h3>SMKN 4</h3>
