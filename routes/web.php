@@ -24,6 +24,152 @@ if (config('app.debug')) {
 // -------------------------------
 // PUBLIC ROUTES (Tanpa Login)
 // -------------------------------
+// Debug route untuk test homepage dengan detail lengkap
+Route::get('/test-homepage-full', function () {
+    $results = [];
+    
+    try {
+        // Test 1: Check semua tabel
+        $results['tables'] = [
+            'galery' => Schema::hasTable('galery'),
+            'posts' => Schema::hasTable('posts'),
+            'agenda' => Schema::hasTable('agenda'),
+            'site_settings' => Schema::hasTable('site_settings'),
+        ];
+        
+        // Test 2: Query galleries
+        try {
+            $latestGaleriIds = \App\Models\galery::join('posts', 'galery.post_id', '=', 'posts.id')
+                ->where('galery.status', 'aktif')
+                ->orderBy('posts.created_at', 'desc')
+                ->select('galery.id')
+                ->limit(5)
+                ->pluck('id');
+            
+            $results['gallery_ids'] = $latestGaleriIds->toArray();
+            
+            if ($latestGaleriIds->isNotEmpty()) {
+                $latestGalleries = \App\Models\galery::with(['post.kategori', 'fotos'])
+                    ->whereIn('id', $latestGaleriIds)
+                    ->get()
+                    ->filter(function($gallery) {
+                        return $gallery->post !== null;
+                    })
+                    ->sortByDesc(function($gallery) {
+                        return $gallery->post->created_at ?? now();
+                    })
+                    ->values();
+                
+                $results['galleries'] = [
+                    'count' => $latestGalleries->count(),
+                    'sample' => $latestGalleries->first() ? [
+                        'id' => $latestGalleries->first()->id,
+                        'has_post' => $latestGalleries->first()->post !== null,
+                        'post_title' => $latestGalleries->first()->post->judul ?? null,
+                    ] : null,
+                ];
+            } else {
+                $results['galleries'] = 'No galleries found';
+            }
+        } catch (\Exception $e) {
+            $results['galleries_error'] = $e->getMessage();
+        }
+        
+        // Test 3: Query agendas
+        try {
+            if (Schema::hasTable('agenda')) {
+                $latestAgendas = \App\Models\Agenda::where('status', 'aktif')
+                    ->orderBy('order')
+                    ->limit(4)
+                    ->get();
+                $results['agendas'] = [
+                    'count' => $latestAgendas->count(),
+                ];
+            } else {
+                $results['agendas'] = 'Table does not exist';
+            }
+        } catch (\Exception $e) {
+            $results['agendas_error'] = $e->getMessage();
+        }
+        
+        // Test 4: SiteSetting
+        try {
+            $testSetting = \App\Models\SiteSetting::get('home_hero_title', 'default');
+            $results['site_setting'] = 'OK - ' . $testSetting;
+        } catch (\Exception $e) {
+            $results['site_setting_error'] = $e->getMessage();
+        }
+        
+        // Test 5: Render view dengan empty data
+        try {
+            $latestGalleries = collect([]);
+            $latestAgendas = collect([]);
+            $view = view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
+            $results['view_empty'] = 'OK';
+        } catch (\Exception $e) {
+            $results['view_empty_error'] = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+        }
+        
+        // Test 6: Simulasi route / yang sebenarnya
+        try {
+            $latestGalleries = collect([]);
+            $latestAgendas = collect([]);
+            
+            if (Schema::hasTable('galery') && Schema::hasTable('posts')) {
+                $latestGaleriIds = \App\Models\galery::join('posts', 'galery.post_id', '=', 'posts.id')
+                    ->where('galery.status', 'aktif')
+                    ->orderBy('posts.created_at', 'desc')
+                    ->select('galery.id')
+                    ->limit(5)
+                    ->pluck('id');
+                
+                if ($latestGaleriIds->isNotEmpty()) {
+                    $latestGalleries = \App\Models\galery::with(['post.kategori', 'fotos'])
+                        ->whereIn('id', $latestGaleriIds)
+                        ->get()
+                        ->filter(function($gallery) {
+                            return $gallery->post !== null;
+                        })
+                        ->sortByDesc(function($gallery) {
+                            return $gallery->post->created_at ?? now();
+                        })
+                        ->values();
+                }
+            }
+            
+            if (Schema::hasTable('agenda')) {
+                $latestAgendas = \App\Models\Agenda::where('status', 'aktif')
+                    ->orderBy('order')
+                    ->limit(4)
+                    ->get();
+            }
+            
+            $view = view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
+            $results['view_with_real_data'] = 'OK';
+        } catch (\Exception $e) {
+            $results['view_with_real_data_error'] = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ];
+        }
+        
+    } catch (\Exception $e) {
+        $results['general_error'] = [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ];
+    }
+    
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+});
+
 // Debug route untuk test homepage query
 Route::get('/test-homepage', function () {
     $results = [];
@@ -200,21 +346,41 @@ Route::get('/', function () {
         
         // Render view dengan error handling
         try {
+            // Pastikan variables ada dan collection
+            if (!isset($latestGalleries) || !is_object($latestGalleries)) {
+                $latestGalleries = collect([]);
+            }
+            if (!isset($latestAgendas) || !is_object($latestAgendas)) {
+                $latestAgendas = collect([]);
+            }
+            
+            // Pre-load SiteSetting untuk menghindari error di view
+            try {
+                if (Schema::hasTable('site_settings')) {
+                    // Pre-load settings jika diperlukan
+                    \App\Models\SiteSetting::all();
+                }
+            } catch (\Exception $e) {
+                \Log::warning('SiteSetting table error (non-fatal): ' . $e->getMessage());
+            }
+            
             return view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error('Error rendering view: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'type' => get_class($e),
             ]);
             throw $e;
         }
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         // Jika database error, tampilkan halaman error atau fallback
         \Log::error('Error loading homepage: ' . $e->getMessage(), [
             'trace' => $e->getTraceAsString(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
+            'type' => get_class($e),
         ]);
         
         // Return JSON untuk debugging jika request expects JSON
