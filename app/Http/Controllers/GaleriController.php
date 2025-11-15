@@ -14,19 +14,57 @@ class GaleriController extends Controller
 {
     public function index(Request $request)
     {
-        $galeri = galery::with(['post.kategori', 'fotos'])->get();
+        try {
+            $galeri = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('galery')) {
+                    $galeri = galery::with(['post.kategori', 'fotos'])->get();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading galeri: ' . $e->getMessage());
+                $galeri = collect([]);
+            }
 
-        if ($request->ajax()) {
-            return response()->json($galeri);
+            if ($request->ajax()) {
+                return response()->json($galeri);
+            }
+
+            return view('galeri.index', compact('galeri'));
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController index error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error loading galleries'], 500);
+            }
+            
+            return view('galeri.index', ['galeri' => collect([])]);
         }
-
-        return view('galeri.index', compact('galeri'));
     }
 
     public function create()
     {
-        $kategori = Kategori::all();
-        return view('galeri.create', compact('kategori'));
+        try {
+            $kategori = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                    $kategori = Kategori::all();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading kategori: ' . $e->getMessage());
+                $kategori = collect([]);
+            }
+            
+            return view('galeri.create', compact('kategori'));
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController create error: ' . $e->getMessage());
+            return view('galeri.create', ['kategori' => collect([])]);
+        }
     }
 
     public function store(Request $request)
@@ -131,26 +169,50 @@ class GaleriController extends Controller
 
     public function show(galery $galeri)
     {
-        $galeri->load(['post.kategori', 'fotos']);
-        
-        if (request()->ajax()) {
-            return response()->json($galeri);
+        try {
+            $galeri->load(['post.kategori', 'fotos']);
+            
+            if (request()->ajax()) {
+                return response()->json($galeri);
+            }
+            
+            return view('galeri.show', compact('galeri'));
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController show error: ' . $e->getMessage());
+            
+            if (request()->ajax()) {
+                return response()->json(['error' => 'Error loading gallery'], 500);
+            }
+            
+            return redirect()->route('galeri.index')->with('error', 'Galeri tidak ditemukan');
         }
-        
-        return view('galeri.show', compact('galeri'));
     }
 
     public function edit(galery $galeri)
     {
-        $kategori = Kategori::all();
-        $galeri->load(['post.kategori', 'fotos']);
+        try {
+            $kategori = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                    $kategori = Kategori::all();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading kategori in edit: ' . $e->getMessage());
+            }
+            
+            $galeri->load(['post.kategori', 'fotos']);
 
-        // Jika AJAX, kembalikan data JSON untuk modal edit
-        if (request()->ajax()) {
-            return response()->json($galeri);
+            // Jika AJAX, kembalikan data JSON untuk modal edit
+            if (request()->ajax()) {
+                return response()->json($galeri);
+            }
+
+            return view('galeri.edit', compact('galeri', 'kategori'));
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController edit error: ' . $e->getMessage());
+            return redirect()->route('galeri.index')->with('error', 'Error loading gallery');
         }
-
-        return view('galeri.edit', compact('galeri', 'kategori'));
     }
 
     public function update(Request $request, galery $galeri)

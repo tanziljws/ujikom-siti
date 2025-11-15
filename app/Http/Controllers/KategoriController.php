@@ -10,9 +10,31 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategori = Kategori::all();
-        $totalFotos = Foto::count();
-        return view('kategori.index', compact('kategori', 'totalFotos'));
+        try {
+            $kategori = collect([]);
+            $totalFotos = 0;
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                    $kategori = Kategori::all();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading kategori: ' . $e->getMessage());
+            }
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('foto')) {
+                    $totalFotos = Foto::count();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error counting foto: ' . $e->getMessage());
+            }
+            
+            return view('kategori.index', compact('kategori', 'totalFotos'));
+        } catch (\Throwable $e) {
+            \Log::error('KategoriController index error: ' . $e->getMessage());
+            return view('kategori.index', ['kategori' => collect([]), 'totalFotos' => 0]);
+        }
     }
 
     public function create()

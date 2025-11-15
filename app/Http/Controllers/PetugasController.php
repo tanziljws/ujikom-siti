@@ -11,8 +11,22 @@ class PetugasController extends Controller
 {
     public function index()
     {
-        $petugas = Petugas::all();
-        return view('petugas.index', compact('petugas'));
+        try {
+            $petugas = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('petugas')) {
+                    $petugas = Petugas::all();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading petugas: ' . $e->getMessage());
+            }
+            
+            return view('petugas.index', compact('petugas'));
+        } catch (\Throwable $e) {
+            \Log::error('PetugasController index error: ' . $e->getMessage());
+            return view('petugas.index', ['petugas' => collect([])]);
+        }
     }
 
     public function create()

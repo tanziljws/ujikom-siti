@@ -10,8 +10,22 @@ class AgendaController extends Controller
 {
     public function index()
     {
-        $agenda = Agenda::orderBy('order')->orderBy('created_at', 'desc')->get();
-        return view('admin.agenda.index', compact('agenda'));
+        try {
+            $agenda = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                    $agenda = Agenda::orderBy('order')->orderBy('created_at', 'desc')->get();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading agenda: ' . $e->getMessage());
+            }
+            
+            return view('admin.agenda.index', compact('agenda'));
+        } catch (\Throwable $e) {
+            \Log::error('AgendaController index error: ' . $e->getMessage());
+            return view('admin.agenda.index', ['agenda' => collect([])]);
+        }
     }
 
     public function create()

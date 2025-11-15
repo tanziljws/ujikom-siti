@@ -20,65 +20,119 @@ class GalleryReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Log that we've reached this method
-        Log::info('GalleryReportController@index called', [
-            'user_id' => Auth::id(),
-            'timestamp' => now()->format('Y-m-d H:i:s')
-        ]);
-        
-        // Get filter parameters
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        $kategoriId = $request->input('kategori_id');
-        $status = $request->input('status');
+        try {
+            // Log that we've reached this method
+            Log::info('GalleryReportController@index called', [
+                'user_id' => Auth::id(),
+                'timestamp' => now()->format('Y-m-d H:i:s')
+            ]);
+            
+            // Get filter parameters
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+            $kategoriId = $request->input('kategori_id');
+            $status = $request->input('status');
 
-        // Build gallery query
-        $galleryQuery = Galery::with(['post.kategori', 'fotos']);
+            // Build gallery query with error handling
+            $galleryQuery = null;
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('galery')) {
+                    $galleryQuery = Galery::with(['post.kategori', 'fotos']);
+                } else {
+                    $galleryQuery = Galery::query(); // Empty query
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error building gallery query: ' . $e->getMessage());
+                $galleryQuery = Galery::query(); // Empty query
+            }
 
-        // Apply filters to gallery query
-        if ($startDate && $endDate) {
-            $galleryQuery->whereHas('post', function($q) use ($startDate, $endDate) {
-                $q->whereBetween('created_at', [$startDate, $endDate]);
-            });
+            // Apply filters to gallery query
+            if ($galleryQuery) {
+                try {
+                    if ($startDate && $endDate) {
+                        $galleryQuery->whereHas('post', function($q) use ($startDate, $endDate) {
+                            $q->whereBetween('created_at', [$startDate, $endDate]);
+                        });
+                    }
+
+                    if ($kategoriId) {
+                        $galleryQuery->whereHas('post', function($q) use ($kategoriId) {
+                            $q->where('kategori_id', $kategoriId);
+                        });
+                    }
+
+                    if ($status) {
+                        $galleryQuery->where('status', $status);
+                    }
+
+                    $galeries = $galleryQuery->get();
+                } catch (\Exception $e) {
+                    \Log::error('Error applying filters: ' . $e->getMessage());
+                    $galeries = collect([]);
+                }
+            } else {
+                $galeries = collect([]);
+            }
+
+            // Get agenda statistics
+            $agendas = collect([]);
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                    $agendaQuery = Agenda::query();
+                    if ($startDate && $endDate) {
+                        $agendaQuery->whereBetween('created_at', [$startDate, $endDate]);
+                    }
+                    if ($status) {
+                        $agendaQuery->where('status', $status);
+                    }
+                    $agendas = $agendaQuery->get();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading agendas: ' . $e->getMessage());
+            }
+
+            // Calculate statistics
+            try {
+                $statistics = $this->calculateStatistics($galeries, $agendas);
+            } catch (\Exception $e) {
+                \Log::error('Error calculating statistics: ' . $e->getMessage());
+                $statistics = [];
+            }
+
+            // Get all categories for filter
+            $categories = collect([]);
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                    $categories = Kategori::all();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading categories: ' . $e->getMessage());
+            }
+            
+            // Log before returning view
+            Log::info('Returning view with data', [
+                'galeries_count' => $galeries->count(),
+                'agendas_count' => $agendas->count(),
+                'categories_count' => $categories->count(),
+                'user_id' => Auth::id()
+            ]);
+
+            return view('admin.reports.galeri', compact('galeries', 'agendas', 'statistics', 'categories', 'startDate', 'endDate', 'kategoriId', 'status'));
+        } catch (\Throwable $e) {
+            \Log::error('GalleryReportController index error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return view('admin.reports.galeri', [
+                'galeries' => collect([]),
+                'agendas' => collect([]),
+                'statistics' => [],
+                'categories' => collect([]),
+                'startDate' => null,
+                'endDate' => null,
+                'kategoriId' => null,
+                'status' => null,
+            ]);
         }
-
-        if ($kategoriId) {
-            $galleryQuery->whereHas('post', function($q) use ($kategoriId) {
-                $q->where('kategori_id', $kategoriId);
-            });
-        }
-
-        if ($status) {
-            $galleryQuery->where('status', $status);
-        }
-
-        $galeries = $galleryQuery->get();
-
-        // Get agenda statistics
-        $agendaQuery = Agenda::query();
-        if ($startDate && $endDate) {
-            $agendaQuery->whereBetween('created_at', [$startDate, $endDate]);
-        }
-        if ($status) {
-            $agendaQuery->where('status', $status);
-        }
-        $agendas = $agendaQuery->get();
-
-        // Calculate statistics
-        $statistics = $this->calculateStatistics($galeries, $agendas);
-
-        // Get all categories for filter
-        $categories = Kategori::all();
-        
-        // Log before returning view
-        Log::info('Returning view with data', [
-            'galeries_count' => $galeries->count(),
-            'agendas_count' => $agendas->count(),
-            'categories_count' => $categories->count(),
-            'user_id' => Auth::id()
-        ]);
-
-        return view('admin.reports.galeri', compact('galeries', 'agendas', 'statistics', 'categories', 'startDate', 'endDate', 'kategoriId', 'status'));
     }
 
     public function exportPdf(Request $request)

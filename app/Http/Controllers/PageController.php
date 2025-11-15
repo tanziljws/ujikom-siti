@@ -20,8 +20,26 @@ class PageController extends Controller
 
     public function showBySlug($slug)
     {
-        $page = Page::where('slug', $slug)->firstOrFail();
-        return view('user.page', compact('page'));
+        try {
+            $page = null;
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('pages')) {
+                    $page = Page::where('slug', $slug)->first();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading page: ' . $e->getMessage());
+            }
+            
+            if (!$page) {
+                abort(404, 'Page not found');
+            }
+            
+            return view('user.page', compact('page'));
+        } catch (\Throwable $e) {
+            \Log::error('PageController showBySlug error: ' . $e->getMessage());
+            abort(404, 'Page not found');
+        }
     }
 
     public function store(Request $request)

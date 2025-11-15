@@ -14,11 +14,25 @@ class GalleryLikeLogController extends Controller
      */
     public function index(Request $request)
     {
-        $logs = GalleryLikeLog::with(['user', 'foto.galery.post'])
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        try {
+            $logs = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('gallery_like_logs')) {
+                    $logs = GalleryLikeLog::with(['user', 'foto.galery.post'])
+                        ->orderByDesc('created_at')
+                        ->paginate(20);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading gallery like logs: ' . $e->getMessage());
+                $logs = collect([]);
+            }
 
-        return view('admin.reports.gallery-like-logs', compact('logs'));
+            return view('admin.reports.gallery-like-logs', compact('logs'));
+        } catch (\Throwable $e) {
+            \Log::error('GalleryLikeLogController index error: ' . $e->getMessage());
+            return view('admin.reports.gallery-like-logs', ['logs' => collect([])]);
+        }
     }
 
     /**

@@ -14,13 +14,36 @@ class InformasiController extends Controller
      */
     public function index()
     {
-        $settings = [
-            'profile_title' => SiteSetting::where('key', 'profile_title')->first(),
-            'profile_content' => SiteSetting::where('key', 'profile_content')->first(),
-            'profile_image' => SiteSetting::where('key', 'profile_image')->first(),
-        ];
-        
-        return view('admin.informasi.index', compact('settings'));
+        try {
+            $settings = [
+                'profile_title' => null,
+                'profile_content' => null,
+                'profile_image' => null,
+            ];
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
+                    $settings = [
+                        'profile_title' => SiteSetting::where('key', 'profile_title')->first(),
+                        'profile_content' => SiteSetting::where('key', 'profile_content')->first(),
+                        'profile_image' => SiteSetting::where('key', 'profile_image')->first(),
+                    ];
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading site settings: ' . $e->getMessage());
+            }
+            
+            return view('admin.informasi.index', compact('settings'));
+        } catch (\Throwable $e) {
+            \Log::error('InformasiController index error: ' . $e->getMessage());
+            return view('admin.informasi.index', [
+                'settings' => [
+                    'profile_title' => null,
+                    'profile_content' => null,
+                    'profile_image' => null,
+                ]
+            ]);
+        }
     }
 
     /**

@@ -13,9 +13,22 @@ class SiteSettingController extends Controller
      */
     public function index()
     {
-        $settings = SiteSetting::orderBy('group')->orderBy('order')->get()->groupBy('group');
-        
-        return view('admin.site-settings.index', compact('settings'));
+        try {
+            $settings = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
+                    $settings = SiteSetting::orderBy('group')->orderBy('order')->get()->groupBy('group');
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading site settings: ' . $e->getMessage());
+            }
+            
+            return view('admin.site-settings.index', compact('settings'));
+        } catch (\Throwable $e) {
+            \Log::error('SiteSettingController index error: ' . $e->getMessage());
+            return view('admin.site-settings.index', ['settings' => collect([])]);
+        }
     }
 
     /**
