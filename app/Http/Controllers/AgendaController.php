@@ -35,93 +35,113 @@ class AgendaController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'date_label' => 'required|string|max:100',
-            'time' => 'required|string|max:100',
-            'event_date' => 'nullable|date',
-            'status' => 'required|in:aktif,nonaktif',
-            'order' => 'nullable|integer|min:0'
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'date_label' => 'required|string|max:100',
+                'time' => 'required|string|max:100',
+                'event_date' => 'nullable|date',
+                'status' => 'required|in:aktif,nonaktif',
+                'order' => 'nullable|integer|min:0'
+            ]);
 
-        // Simpan agenda dengan aman
-        $agenda = new Agenda();
-        $agenda->title = $validated['title'];
-        $agenda->description = $validated['description'];
-        $agenda->date_label = $validated['date_label'];
-        $agenda->time = $validated['time'];
-        $agenda->event_date = $validated['event_date'];
-        $agenda->status = $validated['status'];
-        $agenda->order = $validated['order'] ?? 0;
-        $agenda->save();
+            if (!\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                throw new \Exception('Table agenda does not exist');
+            }
 
-        // Logging untuk memastikan data tersimpan
-        Log::info('Agenda created and saved permanently', [
-            'agenda_id' => $agenda->id, 
-            'title' => $agenda->title,
-            'created_at' => $agenda->created_at->format('Y-m-d H:i:s')
-        ]);
+            $agenda = new Agenda();
+            $agenda->title = $validated['title'];
+            $agenda->description = $validated['description'];
+            $agenda->date_label = $validated['date_label'];
+            $agenda->time = $validated['time'];
+            $agenda->event_date = $validated['event_date'];
+            $agenda->status = $validated['status'];
+            $agenda->order = $validated['order'] ?? 0;
+            $agenda->save();
 
-        return redirect()->route('agenda.index')
-            ->with('success', 'Agenda berhasil ditambahkan dan akan tersimpan permanen!');
+            Log::info('Agenda created', ['agenda_id' => $agenda->id]);
+
+            return redirect()->route('agenda.index')->with('success', 'Agenda berhasil ditambahkan!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('AgendaController store error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error creating agenda: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function edit($id)
     {
-        $agenda = Agenda::findOrFail($id);
-        return view('admin.agenda.edit', compact('agenda'));
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                return redirect()->route('agenda.index')->with('error', 'Table agenda does not exist');
+            }
+            
+            $agenda = Agenda::findOrFail($id);
+            return view('admin.agenda.edit', compact('agenda'));
+        } catch (\Throwable $e) {
+            \Log::error('AgendaController edit error: ' . $e->getMessage());
+            return redirect()->route('agenda.index')->with('error', 'Error loading agenda');
+        }
     }
 
     public function update(Request $request, $id)
     {
-        $agenda = Agenda::findOrFail($id);
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                throw new \Exception('Table agenda does not exist');
+            }
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'date_label' => 'required|string|max:100',
-            'time' => 'required|string|max:100',
-            'event_date' => 'nullable|date',
-            'status' => 'required|in:aktif,nonaktif',
-            'order' => 'nullable|integer|min:0'
-        ]);
+            $agenda = Agenda::findOrFail($id);
 
-        // Update agenda dengan aman
-        $agenda->title = $validated['title'];
-        $agenda->description = $validated['description'];
-        $agenda->date_label = $validated['date_label'];
-        $agenda->time = $validated['time'];
-        $agenda->event_date = $validated['event_date'];
-        $agenda->status = $validated['status'];
-        $agenda->order = $validated['order'] ?? $agenda->order;
-        $agenda->save();
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'date_label' => 'required|string|max:100',
+                'time' => 'required|string|max:100',
+                'event_date' => 'nullable|date',
+                'status' => 'required|in:aktif,nonaktif',
+                'order' => 'nullable|integer|min:0'
+            ]);
 
-        // Logging untuk memastikan data diupdate
-        Log::info('Agenda updated and saved permanently', [
-            'agenda_id' => $agenda->id, 
-            'title' => $agenda->title,
-            'updated_at' => $agenda->updated_at->format('Y-m-d H:i:s')
-        ]);
+            $agenda->title = $validated['title'];
+            $agenda->description = $validated['description'];
+            $agenda->date_label = $validated['date_label'];
+            $agenda->time = $validated['time'];
+            $agenda->event_date = $validated['event_date'];
+            $agenda->status = $validated['status'];
+            $agenda->order = $validated['order'] ?? $agenda->order;
+            $agenda->save();
 
-        return redirect()->route('agenda.index')
-            ->with('success', 'Agenda berhasil diperbarui dan akan tersimpan permanen!');
+            Log::info('Agenda updated', ['agenda_id' => $agenda->id]);
+
+            return redirect()->route('agenda.index')->with('success', 'Agenda berhasil diperbarui!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('AgendaController update error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error updating agenda: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function destroy($id)
     {
-        $agenda = Agenda::findOrFail($id);
-        
-        // Logging sebelum menghapus
-        Log::info('Agenda manually deleted by user', [
-            'agenda_id' => $agenda->id, 
-            'title' => $agenda->title,
-            'deleted_at' => now()->format('Y-m-d H:i:s')
-        ]);
-        
-        $agenda->delete();
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('agenda')) {
+                throw new \Exception('Table agenda does not exist');
+            }
 
-        return redirect()->route('agenda.index')
-            ->with('success', 'Agenda berhasil dihapus!');
+            $agenda = Agenda::findOrFail($id);
+            
+            Log::info('Agenda deletion started', ['agenda_id' => $agenda->id]);
+            
+            $agenda->delete();
+
+            return redirect()->route('agenda.index')->with('success', 'Agenda berhasil dihapus!');
+        } catch (\Throwable $e) {
+            \Log::error('AgendaController destroy error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error deleting agenda: ' . $e->getMessage());
+        }
     }
 }

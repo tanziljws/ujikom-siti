@@ -44,42 +44,82 @@ class KategoriController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'judul' => 'required|string|max:255',
+            ]);
 
-        Kategori::create([
-            'judul' => $request->judul,
-        ]);
+            if (!\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                throw new \Exception('Table kategori does not exist');
+            }
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan');
+            Kategori::create([
+                'judul' => $request->judul,
+            ]);
+
+            return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('KategoriController store error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error creating kategori: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function edit($id)
     {
-        $kategori = Kategori::findOrFail($id);
-        return view('kategori.edit', compact('kategori'));
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                return redirect()->route('kategori.index')->with('error', 'Table kategori does not exist');
+            }
+            
+            $kategori = Kategori::findOrFail($id);
+            return view('kategori.edit', compact('kategori'));
+        } catch (\Throwable $e) {
+            \Log::error('KategoriController edit error: ' . $e->getMessage());
+            return redirect()->route('kategori.index')->with('error', 'Error loading kategori');
+        }
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'judul' => 'required|string|max:255',
+            ]);
 
-        $kategori = Kategori::findOrFail($id);
-        $kategori->update([
-            'judul' => $request->judul,
-        ]);
+            if (!\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                throw new \Exception('Table kategori does not exist');
+            }
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate');
+            $kategori = Kategori::findOrFail($id);
+            $kategori->update([
+                'judul' => $request->judul,
+            ]);
+
+            return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('KategoriController update error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error updating kategori: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function destroy($id)
     {
-        $kategori = Kategori::findOrFail($id);
-        $kategori->delete();
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('kategori')) {
+                throw new \Exception('Table kategori does not exist');
+            }
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');
+            $kategori = Kategori::findOrFail($id);
+            $kategori->delete();
+
+            return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');
+        } catch (\Throwable $e) {
+            \Log::error('KategoriController destroy error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error deleting kategori: ' . $e->getMessage());
+        }
     }
 }

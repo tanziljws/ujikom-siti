@@ -69,102 +69,137 @@ class GaleriController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'kategori_id' => 'required|exists:kategori,id',
-            'fotos' => 'required|array|min:1',
-            'fotos.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240'
-        ]);
-
-        // Buat folder upload jika belum ada
-        if (!file_exists(public_path('uploads/galeri'))) {
-            mkdir(public_path('uploads/galeri'), 0755, true);
-        }
-
-        // 1. Buat post dulu dengan cara yang lebih aman
-        $post = new Post();
-        $post->judul = $request->judul;
-        $post->kategori_id = $request->kategori_id;
-        
-        // Tentukan petugas_id dengan benar
-        if (auth('petugas')->check()) {
-            // Jika login sebagai petugas
-            $post->petugas_id = auth('petugas')->user()->id;
-        } else if (Auth::check()) {
-            // Jika login sebagai user biasa
-            $post->petugas_id = Auth::user()->id;
-        } else {
-            // Jika tidak login sama sekali, gunakan ID default 1
-            // dan log error untuk debugging
-            Log::error('User not authenticated when creating post', [
-                'user_id' => Auth::check() ? Auth::user()->id : null,
-                'petugas_id' => auth('petugas')->check() ? auth('petugas')->user()->id : null,
-                'timestamp' => now()->format('Y-m-d H:i:s')
+        try {
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'kategori_id' => 'required|exists:kategori,id',
+                'fotos' => 'required|array|min:1',
+                'fotos.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240'
             ]);
-            $post->petugas_id = 1;
-        }
-        
-        $post->isi = $request->deskripsi ?? '';
-        $post->status = 'published';
-        $post->save();
 
-        // Logging untuk memastikan post tersimpan
-        Log::info('Post created for gallery and saved permanently', [
-            'post_id' => $post->id,
-            'title' => $post->judul,
-            'created_at' => $post->created_at->format('Y-m-d H:i:s')
-        ]);
-
-        // 2. Buat galeri yang terkait dengan post
-        $galeri = new Galery();
-        $galeri->post_id = $post->id;
-        $galeri->position = null;
-        $galeri->status = 'aktif';
-        $galeri->save();
-
-        // Logging untuk memastikan galeri tersimpan
-        Log::info('Gallery created and saved permanently', [
-            'gallery_id' => $galeri->id,
-            'post_id' => $galeri->post_id,
-            'created_at' => now()->format('Y-m-d H:i:s')
-        ]);
-
-        // 3. Upload dan simpan multiple files
-        $uploadedFiles = [];
-        if ($request->hasFile('fotos')) {
-            foreach ($request->file('fotos') as $index => $foto) {
-                $namaFoto = time() . '_' . $index . '.' . $foto->getClientOriginalExtension();
-                $foto->move(public_path('uploads/galeri'), $namaFoto);
-                
-                // Simpan ke tabel foto dengan cara yang lebih aman
-                $fotoRecord = new Foto();
-                $fotoRecord->galery_id = $galeri->id;
-                $fotoRecord->file = $namaFoto;
-                $fotoRecord->save();
-                
-                // Logging untuk memastikan foto tersimpan
-                Log::info('Photo uploaded for gallery and saved permanently', [
-                    'photo_id' => $fotoRecord->id,
-                    'gallery_id' => $galeri->id,
-                    'filename' => $namaFoto,
-                    'uploaded_at' => now()->format('Y-m-d H:i:s')
-                ]);
-                
-                $uploadedFiles[] = $namaFoto;
+            // Buat folder upload jika belum ada
+            try {
+                if (!file_exists(public_path('uploads/galeri'))) {
+                    mkdir(public_path('uploads/galeri'), 0755, true);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error creating upload directory: ' . $e->getMessage());
             }
-        }
 
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true, 
-                'data' => $galeri,
-                'uploaded_files' => $uploadedFiles,
-                'message' => count($uploadedFiles) . ' foto berhasil diupload dan akan tersimpan permanen!'
+            // 1. Buat post dulu dengan cara yang lebih aman
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('posts')) {
+                    throw new \Exception('Table posts does not exist');
+                }
+                
+                $post = new Post();
+                $post->judul = $request->judul;
+                $post->kategori_id = $request->kategori_id;
+                
+                // Tentukan petugas_id dengan benar
+                if (auth('petugas')->check()) {
+                    $post->petugas_id = auth('petugas')->user()->id;
+                } else if (Auth::check()) {
+                    $post->petugas_id = Auth::user()->id;
+                } else {
+                    Log::error('User not authenticated when creating post');
+                    $post->petugas_id = 1;
+                }
+                
+                $post->isi = $request->deskripsi ?? '';
+                $post->status = 'published';
+                $post->save();
+                
+                Log::info('Post created for gallery', ['post_id' => $post->id]);
+            } catch (\Exception $e) {
+                \Log::error('Error creating post: ' . $e->getMessage());
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Error creating post: ' . $e->getMessage()], 500);
+                }
+                return redirect()->back()->with('error', 'Error creating post: ' . $e->getMessage())->withInput();
+            }
+
+            // 2. Buat galeri yang terkait dengan post
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('galery')) {
+                    throw new \Exception('Table galery does not exist');
+                }
+                
+                $galeri = new galery();
+                $galeri->post_id = $post->id;
+                $galeri->position = null;
+                $galeri->status = 'aktif';
+                $galeri->save();
+                
+                Log::info('Gallery created', ['gallery_id' => $galeri->id]);
+            } catch (\Exception $e) {
+                \Log::error('Error creating gallery: ' . $e->getMessage());
+                // Rollback post
+                try {
+                    $post->delete();
+                } catch (\Exception $deleteError) {
+                    \Log::error('Error deleting post after gallery creation failed: ' . $deleteError->getMessage());
+                }
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Error creating gallery: ' . $e->getMessage()], 500);
+                }
+                return redirect()->back()->with('error', 'Error creating gallery: ' . $e->getMessage())->withInput();
+            }
+
+            // 3. Upload dan simpan multiple files
+            $uploadedFiles = [];
+            if ($request->hasFile('fotos')) {
+                try {
+                    if (!\Illuminate\Support\Facades\Schema::hasTable('foto')) {
+                        throw new \Exception('Table foto does not exist');
+                    }
+                    
+                    foreach ($request->file('fotos') as $index => $foto) {
+                        try {
+                            $namaFoto = time() . '_' . $index . '.' . $foto->getClientOriginalExtension();
+                            $foto->move(public_path('uploads/galeri'), $namaFoto);
+                            
+                            $fotoRecord = new Foto();
+                            $fotoRecord->galery_id = $galeri->id;
+                            $fotoRecord->file = $namaFoto;
+                            $fotoRecord->save();
+                            
+                            $uploadedFiles[] = $namaFoto;
+                        } catch (\Exception $e) {
+                            \Log::error('Error uploading photo ' . $index . ': ' . $e->getMessage());
+                            // Continue with other photos
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error uploading photos: ' . $e->getMessage());
+                }
+            }
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true, 
+                    'data' => $galeri,
+                    'uploaded_files' => $uploadedFiles,
+                    'message' => count($uploadedFiles) . ' foto berhasil diupload!'
+                ]);
+            }
+
+            return redirect()->route('galeri.index')->with('success', count($uploadedFiles) . ' foto berhasil ditambahkan ke galeri!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Validation failed', 'errors' => $e->errors()], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController store error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
             ]);
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error creating gallery: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Error creating gallery: ' . $e->getMessage())->withInput();
         }
-
-        return redirect()->route('galeri.index')->with('success', count($uploadedFiles) . ' foto berhasil ditambahkan ke galeri dan akan tersimpan permanen!');
     }
 
     public function show(galery $galeri)
@@ -217,100 +252,147 @@ class GaleriController extends Controller
 
     public function update(Request $request, galery $galeri)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'kategori_id' => 'required|exists:kategori,id',
-            'status' => 'required|in:aktif,nonaktif',
-            'fotos' => 'nullable|array',
-            'fotos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240'
-        ]);
-
-        // Update galeri status
-        $galeri->update([
-            'status' => $request->status
-        ]);
-
-        // Update post data
-        if ($galeri->post) {
-            $galeri->post->update([
-                'judul' => $request->judul,
-                'isi' => $request->deskripsi,
-                'kategori_id' => $request->kategori_id,
+        try {
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'kategori_id' => 'required|exists:kategori,id',
+                'status' => 'required|in:aktif,nonaktif',
+                'fotos' => 'nullable|array',
+                'fotos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240'
             ]);
-        }
 
-        // Handle new photo uploads
-        if ($request->hasFile('fotos')) {
-            foreach ($request->file('fotos') as $foto) {
-                $namaFoto = time() . '_' . uniqid() . '.' . $foto->getClientOriginalExtension();
-                $foto->move(public_path('uploads/galeri'), $namaFoto);
-                
-                // Create foto record
-                $galeri->fotos()->create([
-                    'file' => $namaFoto,
-                    'galeri_id' => $galeri->id
+            // Update galeri status
+            try {
+                $galeri->update([
+                    'status' => $request->status
                 ]);
+            } catch (\Exception $e) {
+                \Log::error('Error updating gallery status: ' . $e->getMessage());
+                throw $e;
             }
-        }
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'data' => $galeri->load(['post.kategori', 'fotos'])]);
-        }
+            // Update post data
+            try {
+                if ($galeri->post) {
+                    $galeri->post->update([
+                        'judul' => $request->judul,
+                        'isi' => $request->deskripsi,
+                        'kategori_id' => $request->kategori_id,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error updating post: ' . $e->getMessage());
+                throw $e;
+            }
 
-        return redirect()->route('galeri.index')->with('success', 'Galeri berhasil diupdate!');
+            // Handle new photo uploads
+            if ($request->hasFile('fotos')) {
+                try {
+                    foreach ($request->file('fotos') as $foto) {
+                        try {
+                            $namaFoto = time() . '_' . uniqid() . '.' . $foto->getClientOriginalExtension();
+                            $foto->move(public_path('uploads/galeri'), $namaFoto);
+                            
+                            $galeri->fotos()->create([
+                                'file' => $namaFoto,
+                                'galery_id' => $galeri->id
+                            ]);
+                        } catch (\Exception $e) {
+                            \Log::error('Error uploading photo: ' . $e->getMessage());
+                            // Continue with other photos
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error uploading photos: ' . $e->getMessage());
+                }
+            }
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'data' => $galeri->load(['post.kategori', 'fotos'])]);
+            }
+
+            return redirect()->route('galeri.index')->with('success', 'Galeri berhasil diupdate!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Validation failed', 'errors' => $e->errors()], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController update error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error updating gallery: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Error updating gallery: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function destroy(galery $galeri)
     {
-        // Logging sebelum menghapus
-        Log::info('Gallery deletion started', [
-            'gallery_id' => $galeri->id,
-            'post_id' => $galeri->post_id,
-            'started_at' => now()->format('Y-m-d H:i:s')
-        ]);
-
-        // Perbaiki penghapusan foto
-        foreach ($galeri->fotos as $foto) {
-            $filePath = public_path('uploads/galeri/' . $foto->file);
-            if (file_exists($filePath)) {
-                unlink($filePath);
-                
-                // Logging penghapusan file
-                Log::info('Photo file deleted', [
-                    'photo_id' => $foto->id,
-                    'filename' => $foto->file,
-                    'deleted_at' => now()->format('Y-m-d H:i:s')
-                ]);
-            }
-            $foto->delete();
-        }
-
-        // Hapus galeri
-        $galeri->delete();
-
-        // Hapus post terkait
-        if ($galeri->post) {
-            $galeri->post->delete();
+        try {
+            $galleryId = $galeri->id;
+            $postId = $galeri->post_id;
             
-            // Logging penghapusan post
-            Log::info('Post deleted for gallery', [
-                'post_id' => $galeri->post->id,
-                'deleted_at' => now()->format('Y-m-d H:i:s')
+            Log::info('Gallery deletion started', [
+                'gallery_id' => $galleryId,
+                'post_id' => $postId,
             ]);
+
+            // Hapus foto files
+            try {
+                if ($galeri->fotos) {
+                    foreach ($galeri->fotos as $foto) {
+                        try {
+                            $filePath = public_path('uploads/galeri/' . $foto->file);
+                            if (file_exists($filePath)) {
+                                unlink($filePath);
+                            }
+                            $foto->delete();
+                        } catch (\Exception $e) {
+                            \Log::error('Error deleting photo ' . $foto->id . ': ' . $e->getMessage());
+                            // Continue with other photos
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error deleting photos: ' . $e->getMessage());
+            }
+
+            // Hapus post terkait
+            try {
+                if ($galeri->post) {
+                    $galeri->post->delete();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error deleting post: ' . $e->getMessage());
+            }
+
+            // Hapus galeri
+            try {
+                $galeri->delete();
+            } catch (\Exception $e) {
+                \Log::error('Error deleting gallery: ' . $e->getMessage());
+                throw $e;
+            }
+
+            Log::info('Gallery deletion completed', ['gallery_id' => $galleryId]);
+
+            if (request()->ajax()) {
+                return response()->json(['success' => true]);
+            }
+
+            return redirect()->route('galeri.index')->with('success', 'Galeri berhasil dihapus!');
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController destroy error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            if (request()->ajax()) {
+                return response()->json(['error' => 'Error deleting gallery: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Error deleting gallery: ' . $e->getMessage());
         }
-
-        // Logging selesai menghapus
-        Log::info('Gallery deletion completed', [
-            'gallery_id' => $galeri->id,
-            'completed_at' => now()->format('Y-m-d H:i:s')
-        ]);
-
-        if (request()->ajax()) {
-            return response()->json(['success' => true]);
-        }
-
-        return redirect()->route('galeri.index')->with('success', 'Galeri berhasil dihapus!');
     }
 
     // Tambahan: toggle status (aktif/nonaktif atau verified/pending)
