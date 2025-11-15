@@ -247,6 +247,91 @@ Route::get('/test-homepage', function () {
     return response()->json($results, 200, [], JSON_PRETTY_PRINT);
 });
 
+// Debug route untuk cek file vs database
+Route::get('/test-files-vs-db', function () {
+    $results = [];
+    
+    try {
+        // 1. Cek file fisik di folder
+        $filesPath = public_path('uploads/galeri');
+        $physicalFiles = [];
+        if (is_dir($filesPath)) {
+            $files = glob($filesPath . '/*.{jpg,jpeg,png,JPG,JPEG,PNG}', GLOB_BRACE);
+            $physicalFiles = array_map('basename', $files);
+            $results['physical_files'] = [
+                'count' => count($physicalFiles),
+                'files' => array_slice($physicalFiles, 0, 10), // Sample 10 file pertama
+            ];
+        } else {
+            $results['physical_files'] = 'Directory not found';
+        }
+        
+        // 2. Cek data di database
+        $results['database'] = [];
+        
+        if (Schema::hasTable('foto')) {
+            $dbFiles = \App\Models\Foto::pluck('file')->toArray();
+            $results['database']['foto_count'] = count($dbFiles);
+            $results['database']['foto_files'] = array_slice($dbFiles, 0, 10); // Sample 10 file pertama
+            
+            // 3. Compare: file yang ada di folder tapi tidak di database
+            $filesNotInDb = array_diff($physicalFiles, $dbFiles);
+            $results['files_not_in_db'] = [
+                'count' => count($filesNotInDb),
+                'files' => array_slice($filesNotInDb, 0, 10),
+            ];
+            
+            // 4. Compare: file yang ada di database tapi tidak di folder
+            $filesNotInFolder = array_diff($dbFiles, $physicalFiles);
+            $results['files_not_in_folder'] = [
+                'count' => count($filesNotInFolder),
+                'files' => array_slice($filesNotInFolder, 0, 10),
+            ];
+        }
+        
+        // 5. Cek galeri dan posts
+        if (Schema::hasTable('galery')) {
+            $results['database']['galery_count'] = \App\Models\galery::count();
+            $results['database']['galery_aktif'] = \App\Models\galery::where('status', 'aktif')->count();
+        }
+        
+        if (Schema::hasTable('posts')) {
+            $results['database']['posts_count'] = \App\Models\Post::count();
+        }
+        
+        // 6. Cek relasi galery -> post -> foto
+        if (Schema::hasTable('galery') && Schema::hasTable('posts') && Schema::hasTable('foto')) {
+            $galeriWithFotos = \App\Models\galery::with(['post', 'fotos'])
+                ->where('status', 'aktif')
+                ->get()
+                ->filter(function($g) {
+                    return $g->post !== null && $g->fotos->count() > 0;
+                });
+            
+            $results['galeri_with_fotos'] = [
+                'count' => $galeriWithFotos->count(),
+                'sample' => $galeriWithFotos->take(3)->map(function($g) {
+                    return [
+                        'id' => $g->id,
+                        'post_title' => $g->post->judul ?? null,
+                        'fotos_count' => $g->fotos->count(),
+                        'foto_files' => $g->fotos->pluck('file')->toArray(),
+                    ];
+                })->toArray(),
+            ];
+        }
+        
+    } catch (\Exception $e) {
+        $results['error'] = [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ];
+    }
+    
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT);
+});
+
 // Debug route untuk cek data di database
 Route::get('/test-data', function () {
     $results = [];
