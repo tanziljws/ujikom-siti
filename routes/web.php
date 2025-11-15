@@ -415,36 +415,117 @@ Route::get('/', function () {
 
 Route::get('/user/gallery', function () {
     try {
-        $galeri = \App\Models\galery::with(['post.kategori', 'fotos'])->where('status', 'aktif')->get();
-        $kategoris = \App\Models\Kategori::orderBy('judul', 'asc')->get();
+        $galeri = collect([]);
+        $kategoris = collect([]);
+        
+        // Query galleries dengan error handling
+        try {
+            if (Schema::hasTable('galery') && Schema::hasTable('posts')) {
+                $galeri = \App\Models\galery::with(['post.kategori', 'fotos'])
+                    ->where('status', 'aktif')
+                    ->get()
+                    ->filter(function($gallery) {
+                        return $gallery->post !== null;
+                    })
+                    ->values();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error loading galleries: ' . $e->getMessage());
+            $galeri = collect([]);
+        }
+        
+        // Query kategori dengan error handling
+        try {
+            if (Schema::hasTable('kategori')) {
+                $kategoris = \App\Models\Kategori::orderBy('judul', 'asc')->get();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error loading kategori: ' . $e->getMessage());
+            $kategoris = collect([]);
+        }
+        
         return view('user.gallery', compact('galeri', 'kategoris'));
-    } catch (\Exception $e) {
-        \Log::error('Error loading gallery: ' . $e->getMessage());
-        return response()->view('errors.database', ['message' => $e->getMessage()], 500);
+    } catch (\Throwable $e) {
+        \Log::error('Error loading gallery page: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        return response()->view('errors.database', [
+            'message' => config('app.debug') ? $e->getMessage() : 'Error loading gallery page.'
+        ], 500);
     }
 })->name('user.gallery');
 
 Route::get('/user/agenda', function () {
     try {
-        $agendaItems = \App\Models\Agenda::where('status', 'aktif')->orderBy('order')->get();
+        $agendaItems = collect([]);
+        
+        // Query agenda dengan error handling
+        try {
+            if (Schema::hasTable('agenda')) {
+                $agendaItems = \App\Models\Agenda::where('status', 'aktif')
+                    ->orderBy('order')
+                    ->get();
+            } else {
+                \Log::info('Table agenda does not exist, using empty collection');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error loading agenda: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            $agendaItems = collect([]);
+        }
+        
         return view('user.agenda', compact('agendaItems'));
-    } catch (\Exception $e) {
-        \Log::error('Error loading agenda: ' . $e->getMessage());
-        return response()->view('errors.database', ['message' => $e->getMessage()], 500);
+    } catch (\Throwable $e) {
+        \Log::error('Error loading agenda page: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        return response()->view('errors.database', [
+            'message' => config('app.debug') ? $e->getMessage() : 'Error loading agenda page.'
+        ], 500);
     }
 })->name('user.agenda');
 
 Route::get('/user/informasi', function () {
     try {
-        $informasiItems = \App\Models\Informasi::where('status', 'aktif')
-            ->orderByDesc('date') // paling baru dulu
-            ->orderBy('order')    // kalau tanggal sama, pakai urutan
-            ->limit(6)            // hanya tampilkan 6 informasi terbaru
-            ->get();
+        $informasiItems = collect([]);
+        
+        // Query informasi dengan error handling
+        try {
+            if (Schema::hasTable('informasi')) {
+                $informasiItems = \App\Models\Informasi::where('status', 'aktif')
+                    ->orderByDesc('date') // paling baru dulu
+                    ->orderBy('order')    // kalau tanggal sama, pakai urutan
+                    ->limit(6)            // hanya tampilkan 6 informasi terbaru
+                    ->get();
+            } else {
+                \Log::info('Table informasi does not exist, using empty collection');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error loading informasi: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            $informasiItems = collect([]);
+        }
+        
         return view('user.informasi', compact('informasiItems'));
-    } catch (\Exception $e) {
-        \Log::error('Error loading informasi: ' . $e->getMessage());
-        return response()->view('errors.database', ['message' => $e->getMessage()], 500);
+    } catch (\Throwable $e) {
+        \Log::error('Error loading informasi page: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        return response()->view('errors.database', [
+            'message' => config('app.debug') ? $e->getMessage() : 'Error loading informasi page.'
+        ], 500);
     }
 })->name('user.informasi');
 
