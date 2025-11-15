@@ -711,19 +711,55 @@ Route::get('/user/gallery', function () {
                     
                     \Log::info('Gallery query result (before filter)', [
                         'count' => $galeri->count(),
+                        'sample_ids' => $galeri->take(5)->pluck('id')->toArray(),
                     ]);
                     
-                    // Filter galleries yang punya post dan foto
-                    $galeri = $galeri->filter(function($gallery) {
+                    // Debug: Check relations
+                    if ($galeri->count() > 0) {
+                        $sample = $galeri->first();
+                        \Log::info('Sample gallery relation check', [
+                            'gallery_id' => $sample->id,
+                            'has_post' => $sample->post !== null,
+                            'post_id' => $sample->post ? $sample->post->id : null,
+                            'has_fotos' => $sample->fotos !== null,
+                            'fotos_count' => $sample->fotos ? $sample->fotos->count() : 0,
+                        ]);
+                    }
+                    
+                    // Filter galleries yang punya post dan foto - dengan logging detail
+                    $beforeFilterCount = $galeri->count();
+                    $filteredGaleri = collect([]);
+                    $filteredOut = 0;
+                    
+                    foreach ($galeri as $gallery) {
                         try {
                             $hasPost = $gallery->post !== null;
-                            $hasFotos = $gallery->fotos && $gallery->fotos->count() > 0;
-                            return $hasPost && $hasFotos;
+                            $hasFotos = $gallery->fotos !== null && $gallery->fotos->count() > 0;
+                            
+                            if ($hasPost && $hasFotos) {
+                                $filteredGaleri->push($gallery);
+                            } else {
+                                $filteredOut++;
+                                \Log::debug('Gallery filtered out', [
+                                    'id' => $gallery->id,
+                                    'has_post' => $hasPost,
+                                    'has_fotos' => $hasFotos,
+                                    'fotos_count' => $gallery->fotos ? $gallery->fotos->count() : 0,
+                                ]);
+                            }
                         } catch (\Exception $filterError) {
+                            $filteredOut++;
                             \Log::warning('Error filtering gallery ' . $gallery->id . ': ' . $filterError->getMessage());
-                            return false;
                         }
-                    });
+                    }
+                    
+                    $galeri = $filteredGaleri;
+                    
+                    \Log::info('Gallery filter result', [
+                        'before_filter' => $beforeFilterCount,
+                        'after_filter' => $galeri->count(),
+                        'filtered_out' => $filteredOut,
+                    ]);
                     
                     // Sort by created_at
                     $galeri = $galeri->sortByDesc(function($gallery) {
@@ -745,7 +781,24 @@ Route::get('/user/gallery', function () {
                         'file' => $queryError->getFile(),
                         'line' => $queryError->getLine(),
                     ]);
-                    $galeri = collect([]);
+                    
+                    // Fallback: Try simpler query
+                    try {
+                        \Log::info('Trying fallback query...');
+                        $galeri = \App\Models\galery::where('status', 'aktif')
+                            ->get()
+                            ->load(['post.kategori', 'fotos'])
+                            ->filter(function($gallery) {
+                                return $gallery->post !== null && 
+                                       $gallery->fotos && 
+                                       $gallery->fotos->count() > 0;
+                            })
+                            ->values();
+                        \Log::info('Fallback query result', ['count' => $galeri->count()]);
+                    } catch (\Exception $fallbackError) {
+                        \Log::error('Fallback query also failed: ' . $fallbackError->getMessage());
+                        $galeri = collect([]);
+                    }
                 }
             } else {
                 \Log::warning('Gallery query skipped - tables missing', [
