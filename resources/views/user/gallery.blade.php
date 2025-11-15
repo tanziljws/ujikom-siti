@@ -1445,6 +1445,41 @@
         
         // Halaman galeri kini read-only; tidak ada form CRUD
         
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (type === 'error') toast.classList.add('toast-error');
+            if (type === 'success') toast.classList.add('toast-success');
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'toast-icon';
+            iconSpan.innerHTML = type === 'error' ? '<i class="fas fa-exclamation-circle text-red-500"></i>' : '<i class="fas fa-info-circle text-blue-500"></i>';
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'toast-message';
+            msgDiv.textContent = message;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.onclick = () => container.removeChild(toast);
+
+            toast.appendChild(iconSpan);
+            toast.appendChild(msgDiv);
+            toast.appendChild(closeBtn);
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast.parentElement === container) {
+                    container.removeChild(toast);
+                }
+            }, 3000);
+        }
+
         // Like/Dislike Functionality
         async function toggleLike(fotoId, button) {
             try {
@@ -1455,7 +1490,13 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
-                
+
+                if (response.status === 401) {
+                    const errorData = await response.json().catch(() => ({}));
+                    showNotification(errorData.message || 'Silakan login terlebih dahulu untuk memberi like.', 'error');
+                    return;
+                }
+
                 const data = await response.json();
                 
                 if (data.success) {
@@ -1484,11 +1525,11 @@
                         }
                     });
                 } else {
-                    alert('Gagal memperbarui like: ' + data.message);
+                    showNotification('Gagal memperbarui like: ' + (data.message || 'Terjadi kesalahan.'), 'error');
                 }
             } catch (error) {
                 console.error('Error toggling like:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
             }
         }
 
@@ -1501,6 +1542,12 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 });
+
+                if (response.status === 401) {
+                    const errorData = await response.json().catch(() => ({}));
+                    showNotification(errorData.message || 'Silakan login terlebih dahulu untuk memberi dislike.', 'error');
+                    return;
+                }
 
                 const data = await response.json();
 
@@ -1530,11 +1577,11 @@
                         }
                     });
                 } else {
-                    alert('Gagal memperbarui dislike: ' + data.message);
+                    showNotification('Gagal memperbarui dislike: ' + (data.message || 'Terjadi kesalahan.'), 'error');
                 }
             } catch (error) {
                 console.error('Error toggling dislike:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                showNotification('Terjadi kesalahan. Silakan coba lagi.', 'error');
             }
         }
     </script>

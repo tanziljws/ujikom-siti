@@ -7,6 +7,9 @@ use App\Models\Kategori;
 use App\Models\Foto;
 use App\Models\Post;
 use App\Models\Agenda;
+use App\Models\User;
+use App\Models\Informasi;
+use App\Models\GalleryLikeLog;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -190,6 +193,13 @@ class GalleryReportController extends Controller
         $totalAktifAgendas = $agendas->where('status', 'aktif')->count();
         $totalNonaktifAgendas = $agendas->where('status', 'nonaktif')->count();
 
+        // System-wide statistics
+        $totalUsers = User::count();
+        $totalInformasi = Informasi::count();
+        $totalLikes = Foto::sum('likes');
+        $totalDislikes = Foto::sum('dislikes');
+        $totalLikeLogs = GalleryLikeLog::count();
+
         // Sort categories by count
         arsort($categoriesCount);
 
@@ -206,6 +216,11 @@ class GalleryReportController extends Controller
             'avg_photos_per_gallery' => $totalGaleries > 0 ? round($totalPhotos / $totalGaleries, 2) : 0,
             'categories_count' => $categoriesCount,
             'most_popular_category' => $mostPopularCategory,
+            'total_users' => $totalUsers,
+            'total_informasi' => $totalInformasi,
+            'total_likes' => $totalLikes,
+            'total_dislikes' => $totalDislikes,
+            'total_like_logs' => $totalLikeLogs,
         ];
     }
 }

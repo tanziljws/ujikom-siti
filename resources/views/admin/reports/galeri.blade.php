@@ -1,14 +1,14 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Laporan Statistik Galeri & Agenda - Admin')
+@section('title', 'Laporan Sistem - Admin')
 
 @section('content')
 <div class="w-full">
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Laporan Statistik Galeri & Agenda</h1>
-            <p class="text-gray-600 mt-1">Lihat dan export statistik galeri dan agenda dalam bentuk PDF</p>
+            <h1 class="text-3xl font-bold text-gray-800">Laporan Statistik Sistem</h1>
+            <p class="text-gray-600 mt-1">Ringkasan statistik galeri, agenda, user, informasi, serta aktivitas like/dislike. Data dapat diexport ke PDF.</p>
         </div>
         <a href="{{ route('galeri.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>Kembali
@@ -107,6 +107,61 @@
                 </div>
                 <div class="bg-white bg-opacity-20 rounded-full p-3">
                     <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Total User -->
+        <div class="bg-gradient-to-br from-sky-500 to-sky-600 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-90">Total User Terdaftar</p>
+                    <p class="text-3xl font-bold mt-2">{{ $statistics['total_users'] }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-user-graduate text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Informasi -->
+        <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-90">Total Informasi</p>
+                    <p class="text-3xl font-bold mt-2">{{ $statistics['total_informasi'] }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-bullhorn text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Like -->
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-90">Total Like pada Foto</p>
+                    <p class="text-3xl font-bold mt-2">{{ $statistics['total_likes'] }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-thumbs-up text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Dislike -->
+        <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-90">Total Dislike pada Foto</p>
+                    <p class="text-3xl font-bold mt-2">{{ $statistics['total_dislikes'] }}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-full p-3">
+                    <i class="fas fa-thumbs-down text-2xl"></i>
                 </div>
             </div>
         </div>

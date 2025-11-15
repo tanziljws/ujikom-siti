@@ -10,6 +10,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\GalleryReportController;
+use App\Http\Controllers\GalleryLikeLogController;
 use App\Http\Controllers\FotoController;
 use App\Http\Controllers\Admin\InformasiAdminController;
 use App\Models\User;
@@ -102,6 +103,10 @@ Route::middleware(['auth:petugas'])->group(function () {
     // Gallery Report Routes
     Route::get('galeri/report', [GalleryReportController::class, 'index'])->name('galeri.report');
     Route::get('galeri/report/pdf', [GalleryReportController::class, 'exportPdf'])->name('galeri.report.pdf');
+
+    // Gallery Like/Dislike Logs (riwayat like/dislike user)
+    Route::get('galeri/like-logs', [GalleryLikeLogController::class, 'index'])->name('galeri.like-logs');
+    Route::post('galeri/like-logs/reset', [GalleryLikeLogController::class, 'resetAll'])->name('galeri.like-logs.reset');
     
     // ✅ Resource CRUD routes
     Route::resource('kategori', KategoriController::class);

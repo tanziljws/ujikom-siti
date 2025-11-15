@@ -97,6 +97,12 @@
                         <span>Laporan Statistik</span>
                     </a>
 
+                    <a href="{{ route('galeri.like-logs') }}" 
+                       class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 {{ request()->routeIs('galeri.like-logs') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
+                        <i class="fas fa-list-ul w-5"></i>
+                        <span>Riwayat Like/Dislike</span>
+                    </a>
+
                     <a href="{{ route('admin.informasi-items.index') }}" 
                        class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.informasi-items.*') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white' }}">
                         <i class="fas fa-bullhorn w-5"></i>
