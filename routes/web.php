@@ -619,6 +619,12 @@ Route::get('/', function () {
                 \Log::warning('SiteSetting table error (non-fatal): ' . $e->getMessage());
             }
             
+            // Debug: Log gallery count sebelum render
+            \Log::info('Rendering homepage', [
+                'gallery_count' => $latestGalleries->count(),
+                'agenda_count' => $latestAgendas->count(),
+            ]);
+            
             return view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
         } catch (\Throwable $e) {
             \Log::error('Error rendering view: ' . $e->getMessage(), [
