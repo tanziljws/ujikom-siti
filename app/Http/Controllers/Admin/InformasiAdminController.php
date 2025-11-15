@@ -10,8 +10,22 @@ class InformasiAdminController extends Controller
 {
     public function index()
     {
-        $informasiItems = Informasi::orderBy('order')->orderByDesc('date')->paginate(10);
-        return view('admin.informasi-items.index', compact('informasiItems'));
+        try {
+            $informasiItems = collect([]);
+            
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('informasi')) {
+                    $informasiItems = Informasi::orderBy('order')->orderByDesc('date')->paginate(10);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error loading informasi items: ' . $e->getMessage());
+            }
+            
+            return view('admin.informasi-items.index', compact('informasiItems'));
+        } catch (\Throwable $e) {
+            \Log::error('InformasiAdminController index error: ' . $e->getMessage());
+            return view('admin.informasi-items.index', ['informasiItems' => collect([])]);
+        }
     }
 
     public function create()
