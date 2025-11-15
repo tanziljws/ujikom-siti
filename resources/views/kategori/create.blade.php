@@ -15,7 +15,24 @@
         </div>
 
         <div class="p-6">
-            <form method="POST" action="{{ route('kategori.store') }}" class="space-y-6">
+            <!-- Error Messages -->
+            @if($errors->any())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <div>
+                            <p class="font-bold">Terdapat kesalahan:</p>
+                            <ul class="list-disc list-inside mt-2">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('kategori.store') }}" class="space-y-6" id="kategoriForm">
                 @csrf
                 
                 <div>

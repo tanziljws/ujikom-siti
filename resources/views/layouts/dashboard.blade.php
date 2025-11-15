@@ -163,6 +163,26 @@
 
             <!-- Page Content -->
             <main class="p-6">
+                <!-- Global Success Message -->
+                @if(session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-md" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-2 text-lg"></i>
+                            <span class="block sm:inline font-medium">{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Global Error Message -->
+                @if(session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-md" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-2 text-lg"></i>
+                            <span class="block sm:inline font-medium">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                @endif
+
                 @yield('content')
             </main>
         </div>
