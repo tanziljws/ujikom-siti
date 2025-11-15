@@ -704,75 +704,22 @@ Route::get('/user/gallery', function () {
             
             if ($hasGalery && $hasPosts) {
                 try {
-                    // Query dengan error handling lebih detail
+                    // Simplified query - sama dengan test yang berhasil
                     $galeri = \App\Models\galery::with(['post.kategori', 'fotos'])
                         ->where('status', 'aktif')
-                        ->get();
-                    
-                    \Log::info('Gallery query result (before filter)', [
-                        'count' => $galeri->count(),
-                        'sample_ids' => $galeri->take(5)->pluck('id')->toArray(),
-                    ]);
-                    
-                    // Debug: Check relations
-                    if ($galeri->count() > 0) {
-                        $sample = $galeri->first();
-                        \Log::info('Sample gallery relation check', [
-                            'gallery_id' => $sample->id,
-                            'has_post' => $sample->post !== null,
-                            'post_id' => $sample->post ? $sample->post->id : null,
-                            'has_fotos' => $sample->fotos !== null,
-                            'fotos_count' => $sample->fotos ? $sample->fotos->count() : 0,
-                        ]);
-                    }
-                    
-                    // Filter galleries yang punya post dan foto - dengan logging detail
-                    $beforeFilterCount = $galeri->count();
-                    $filteredGaleri = collect([]);
-                    $filteredOut = 0;
-                    
-                    foreach ($galeri as $gallery) {
-                        try {
-                            $hasPost = $gallery->post !== null;
-                            $hasFotos = $gallery->fotos !== null && $gallery->fotos->count() > 0;
-                            
-                            if ($hasPost && $hasFotos) {
-                                $filteredGaleri->push($gallery);
-                            } else {
-                                $filteredOut++;
-                                \Log::debug('Gallery filtered out', [
-                                    'id' => $gallery->id,
-                                    'has_post' => $hasPost,
-                                    'has_fotos' => $hasFotos,
-                                    'fotos_count' => $gallery->fotos ? $gallery->fotos->count() : 0,
-                                ]);
-                            }
-                        } catch (\Exception $filterError) {
-                            $filteredOut++;
-                            \Log::warning('Error filtering gallery ' . $gallery->id . ': ' . $filterError->getMessage());
-                        }
-                    }
-                    
-                    $galeri = $filteredGaleri;
-                    
-                    \Log::info('Gallery filter result', [
-                        'before_filter' => $beforeFilterCount,
-                        'after_filter' => $galeri->count(),
-                        'filtered_out' => $filteredOut,
-                    ]);
-                    
-                    // Sort by created_at
-                    $galeri = $galeri->sortByDesc(function($gallery) {
-                        try {
+                        ->get()
+                        ->filter(function($gallery) {
+                            return $gallery->post !== null && 
+                                   $gallery->fotos !== null && 
+                                   $gallery->fotos->count() > 0;
+                        })
+                        ->sortByDesc(function($gallery) {
                             return $gallery->post->created_at ?? now();
-                        } catch (\Exception $e) {
-                            return now();
-                        }
-                    })->values();
+                        })
+                        ->values();
                     
-                    // Debug: Log gallery count
-                    \Log::info('Gallery page loaded (after filter)', [
-                        'gallery_count' => $galeri->count(),
+                    \Log::info('Gallery query result', [
+                        'count' => $galeri->count(),
                         'sample_ids' => $galeri->take(5)->pluck('id')->toArray(),
                     ]);
                 } catch (\Exception $queryError) {
@@ -807,7 +754,11 @@ Route::get('/user/gallery', function () {
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error('Error loading galleries: ' . $e->getMessage());
+            \Log::error('Error loading galleries (outer catch): ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             $galeri = collect([]);
         }
         
