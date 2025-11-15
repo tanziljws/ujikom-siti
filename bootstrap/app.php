@@ -20,13 +20,32 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle database connection errors gracefully
         $exceptions->render(function (QueryException $e, $request) {
+            \Illuminate\Support\Facades\Log::error('Database error: ' . $e->getMessage(), [
+                'host' => env('DB_HOST'),
+                'port' => env('DB_PORT'),
+                'database' => env('DB_DATABASE'),
+                'connection' => env('DB_CONNECTION'),
+            ]);
+            
             if (app()->environment('production')) {
-                \Illuminate\Support\Facades\Log::error('Database error: ' . $e->getMessage());
                 if ($request->expectsJson()) {
-                    return response()->json(['error' => 'Database connection error'], 500);
+                    return response()->json([
+                        'error' => 'Database connection error',
+                        'message' => 'Please check your database configuration',
+                    ], 500);
                 }
                 // Return simple error response if view doesn't exist
                 return response('Database connection error. Please check your configuration.', 500);
             }
+            
+            // In development, show more details
+            return response()->json([
+                'error' => 'Database connection error',
+                'message' => $e->getMessage(),
+                'host' => env('DB_HOST'),
+                'port' => env('DB_PORT'),
+                'database' => env('DB_DATABASE'),
+                'connection' => env('DB_CONNECTION'),
+            ], 500);
         });
     })->create();

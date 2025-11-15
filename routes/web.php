@@ -18,6 +18,35 @@ use App\Models\User;
 // -------------------------------
 // PUBLIC ROUTES (Tanpa Login)
 // -------------------------------
+// Debug route untuk test database connection (hapus setelah fix)
+Route::get('/test-db', function () {
+    try {
+        \DB::connection()->getPdo();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database connection successful',
+            'connection' => config('database.default'),
+            'host' => config('database.connections.mysql.host'),
+            'port' => config('database.connections.mysql.port'),
+            'database' => config('database.connections.mysql.database'),
+            'username' => config('database.connections.mysql.username'),
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'connection' => config('database.default'),
+            'host' => config('database.connections.mysql.host'),
+            'port' => config('database.connections.mysql.port'),
+            'database' => config('database.connections.mysql.database'),
+            'username' => config('database.connections.mysql.username'),
+            'env_db_connection' => env('DB_CONNECTION'),
+            'env_db_host' => env('DB_HOST'),
+            'env_db_port' => env('DB_PORT'),
+        ], 500);
+    }
+});
+
 Route::get('/', function () {
     // Get latest 5 galleries
     $latestGalleries = \App\Models\galery::with(['post.kategori', 'fotos'])
