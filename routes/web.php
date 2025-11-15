@@ -15,6 +15,11 @@ use App\Http\Controllers\FotoController;
 use App\Http\Controllers\Admin\InformasiAdminController;
 use App\Models\User;
 
+// Load debug routes if in debug mode
+if (config('app.debug')) {
+    require __DIR__.'/debug.php';
+}
+
 // -------------------------------
 // PUBLIC ROUTES (Tanpa Login)
 // -------------------------------
@@ -49,27 +54,61 @@ Route::get('/test-db', function () {
 
 Route::get('/', function () {
     try {
-        // Get latest 5 galleries
-        $latestGalleries = \App\Models\galery::with(['post.kategori', 'fotos'])
-            ->where('status', 'aktif')
-            ->orderBy(
-                \App\Models\Post::select('created_at')
-                    ->whereColumn('posts.id', 'galery.post_id')
-            , 'desc')
-            ->limit(5)
-            ->get();
+        // Get latest 5 galleries - menggunakan JOIN seperti di DashboardController
+        $latestGalleries = collect([]);
+        try {
+            $latestGalleries = \App\Models\galery::with(['post.kategori', 'fotos'])
+                ->join('posts', 'galery.post_id', '=', 'posts.id')
+                ->where('galery.status', 'aktif')
+                ->orderBy('posts.created_at', 'desc')
+                ->select('galery.*')
+                ->limit(5)
+                ->get();
+        } catch (\Exception $e) {
+            \Log::error('Error loading galleries: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Jika error, gunakan empty collection
+            $latestGalleries = collect([]);
+        }
         
-        // Get latest 4 agendas
-        $latestAgendas = \App\Models\Agenda::where('status', 'aktif')
-            ->orderBy('order')
-            ->limit(4)
-            ->get();
+        // Get latest 4 agendas - dengan error handling
+        $latestAgendas = collect([]);
+        try {
+            $latestAgendas = \App\Models\Agenda::where('status', 'aktif')
+                ->orderBy('order')
+                ->limit(4)
+                ->get();
+        } catch (\Exception $e) {
+            \Log::error('Error loading agendas: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Jika error, gunakan empty collection
+            $latestAgendas = collect([]);
+        }
         
         return view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
     } catch (\Exception $e) {
         // Jika database error, tampilkan halaman error atau fallback
-        \Log::error('Error loading homepage: ' . $e->getMessage());
-        return response()->view('errors.database', ['message' => $e->getMessage()], 500);
+        \Log::error('Error loading homepage: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        
+        // Return JSON untuk debugging jika request expects JSON
+        if (request()->expectsJson() || request()->wantsJson()) {
+            return response()->json([
+                'error' => 'Error loading homepage',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
+        
+        return response()->view('errors.database', [
+            'message' => config('app.debug') ? $e->getMessage() : 'Database connection error. Please check your configuration.'
+        ], 500);
     }
 })->name('user.dashboard');
 
