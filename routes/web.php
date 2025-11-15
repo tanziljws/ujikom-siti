@@ -510,8 +510,18 @@ Route::get('/', function () {
         // Get latest 5 galleries - load relasi dengan benar
         $latestGalleries = collect([]);
         try {
-            // Cek apakah tabel ada
-            if (Schema::hasTable('galery') && Schema::hasTable('posts')) {
+            // Cek apakah tabel ada - wrap dengan try-catch karena bisa error jika DB connection bermasalah
+            $hasGalery = false;
+            $hasPosts = false;
+            try {
+                $hasGalery = Schema::hasTable('galery');
+                $hasPosts = Schema::hasTable('posts');
+            } catch (\Exception $schemaError) {
+                \Log::warning('Schema check error: ' . $schemaError->getMessage());
+                // Jika schema check error, skip query
+            }
+            
+            if ($hasGalery && $hasPosts) {
                 // Ambil ID galeri terbaru dulu
                 $latestGaleriIds = \App\Models\galery::join('posts', 'galery.post_id', '=', 'posts.id')
                     ->where('galery.status', 'aktif')
@@ -547,8 +557,15 @@ Route::get('/', function () {
         // Get latest 4 agendas - dengan error handling
         $latestAgendas = collect([]);
         try {
-            // Cek apakah tabel agenda ada
-            if (Schema::hasTable('agenda')) {
+            // Cek apakah tabel agenda ada - wrap dengan try-catch
+            $hasAgenda = false;
+            try {
+                $hasAgenda = Schema::hasTable('agenda');
+            } catch (\Exception $schemaError) {
+                \Log::warning('Schema check error for agenda: ' . $schemaError->getMessage());
+            }
+            
+            if ($hasAgenda) {
                 try {
                     $latestAgendas = \App\Models\Agenda::where('status', 'aktif')
                         ->orderBy('order')
@@ -585,7 +602,14 @@ Route::get('/', function () {
             
             // Pre-load SiteSetting untuk menghindari error di view
             try {
-                if (Schema::hasTable('site_settings')) {
+                $hasSiteSettings = false;
+                try {
+                    $hasSiteSettings = Schema::hasTable('site_settings');
+                } catch (\Exception $schemaError) {
+                    \Log::warning('Schema check error for site_settings: ' . $schemaError->getMessage());
+                }
+                
+                if ($hasSiteSettings) {
                     // Pre-load settings jika diperlukan
                     \App\Models\SiteSetting::all();
                 }
@@ -623,21 +647,32 @@ Route::get('/', function () {
             ], 500);
         }
         
-        // Coba render error view, jika gagal return plain text
+        // Jangan tampilkan error view, langsung return homepage dengan empty data
+        // Ini lebih user-friendly daripada menampilkan error page
+        \Log::error('Homepage error (rendering with empty data): ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        
+        // Return homepage dengan empty collections
+        $latestGalleries = collect([]);
+        $latestAgendas = collect([]);
+        
         try {
-            return response()->view('errors.database', [
-                'message' => config('app.debug') ? $e->getMessage() : 'Database connection error. Please check your configuration.'
-            ], 500);
+            return view('user.dashboard', compact('latestGalleries', 'latestAgendas'));
         } catch (\Exception $viewError) {
-            // Jika error view juga gagal, return JSON dengan detail error
-            return response()->json([
-                'error' => 'Internal Server Error',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'type' => get_class($e),
-                'view_error' => $viewError->getMessage(),
-            ], 500);
+            // Jika view juga error, return simple HTML
+            return response('
+                <html>
+                <head><title>SMKN 4 Bogor</title></head>
+                <body style="font-family: Arial; text-align: center; padding: 50px;">
+                    <h1>SMKN 4 Bogor</h1>
+                    <p>Sedang dalam perbaikan. Silakan coba beberapa saat lagi.</p>
+                    <a href="/">Refresh</a>
+                </body>
+                </html>
+            ', 200);
         }
     }
 })->name('user.dashboard');
