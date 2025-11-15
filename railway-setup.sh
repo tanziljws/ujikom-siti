@@ -30,7 +30,16 @@ php artisan migrate --force || echo "⚠️ Migration failed, continuing..."
 
 # Create storage link
 echo "🔗 Creating storage link..."
+# Remove existing link if exists
+rm -f public/storage || true
+# Create new link
 php artisan storage:link || echo "⚠️ Storage link already exists or failed"
+# Verify link exists
+if [ -L "public/storage" ]; then
+    echo "✅ Storage link created successfully"
+else
+    echo "⚠️ Warning: Storage link may not have been created"
+fi
 
 # Clear and cache config
 echo "🧹 Clearing and caching config..."

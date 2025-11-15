@@ -1,1 +1,1 @@
-web: php artisan serve --host=0.0.0.0 --port=$PORT
+web: bash -c "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs public/uploads/galeri bootstrap/cache && chmod -R 775 storage bootstrap/cache public/uploads 2>/dev/null || true && php artisan storage:link 2>/dev/null || true && php artisan serve --host=0.0.0.0 --port=$PORT"
