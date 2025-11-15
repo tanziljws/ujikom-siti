@@ -398,9 +398,18 @@ class GaleriController extends Controller
     // Tambahan: toggle status (aktif/nonaktif atau verified/pending)
     public function toggleStatus(galery $galeri)
     {
-        $galeri->status = $galeri->status === 'aktif' ? 'nonaktif' : 'aktif';
-        $galeri->save();
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('galery')) {
+                throw new \Exception('Table galery does not exist');
+            }
 
-        return response()->json(['success' => true, 'status' => $galeri->status]);
+            $galeri->status = $galeri->status === 'aktif' ? 'nonaktif' : 'aktif';
+            $galeri->save();
+
+            return response()->json(['success' => true, 'status' => $galeri->status]);
+        } catch (\Throwable $e) {
+            \Log::error('GaleriController toggleStatus error: ' . $e->getMessage());
+            return response()->json(['error' => 'Error toggling status: ' . $e->getMessage()], 500);
+        }
     }
 }
