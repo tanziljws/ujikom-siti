@@ -911,7 +911,7 @@
         <nav class="navbar">
             <div class="branding">
                 <div class="brand-icon">
-                    <img src="{{ asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="{{ secure_asset('images/LOGO_SMKN_4.png') }}" alt="SMKN 4 Bogor Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="brand-text">
                     <h1>SMKN 4</h1>
@@ -977,7 +977,7 @@
 
             <!-- Gallery Grid -->
             <div class="gallery-grid" id="galleryGrid">
-                @foreach($galeri as $item)
+                @forelse($galeri as $item)
                 <div class="gallery-item" 
                      data-category="{{ $item->post->kategori->judul ?? 'Umum' }}" 
                      data-gallery-id="{{ $item->id }}"
@@ -988,7 +988,7 @@
                         data-foto-dislikes="{{ $item->fotos->first()->dislikes ?? 0 }}"
                      @endif>
                     @if($item->fotos->count() > 0)
-                        <img src="{{ asset('uploads/galeri/' . $item->fotos->first()->file) }}" 
+                        <img src="{{ secure_asset('uploads/galeri/' . $item->fotos->first()->file) }}" 
                              alt="{{ $item->post->judul ?? 'Gallery Image' }}" 
                              class="gallery-image"
                              onclick="openGalleryModal('{{ $item->id }}')">
@@ -1036,11 +1036,18 @@
                     <!-- Hidden data for all photos -->
                     <div class="gallery-photos-data" style="display: none;">
                         @foreach($item->fotos as $foto)
-                            <span data-photo="{{ asset('uploads/galeri/' . $foto->file) }}"></span>
+                            <span data-photo="{{ secure_asset('uploads/galeri/' . $foto->file) }}"></span>
                         @endforeach
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #64748b;">
+                    <i class="fas fa-images" style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3 style="font-size: 24px; margin-bottom: 10px; color: #1e293b;">Tidak ada galeri tersedia</h3>
+                    <p style="font-size: 16px;">Belum ada galeri foto yang dapat ditampilkan saat ini.</p>
+                    <p style="font-size: 14px; margin-top: 10px; color: #94a3b8;">Debug: Gallery count = {{ $galeri->count() }}</p>
+                </div>
+                @endforelse
             </div>
         </div>
     </main>

@@ -715,6 +715,11 @@ Route::get('/user/gallery', function () {
                             return $gallery->post->created_at ?? now();
                         })
                         ->values();
+                    
+                    // Debug: Log gallery count
+                    \Log::info('Gallery page loaded', [
+                        'gallery_count' => $galeri->count(),
+                    ]);
                 } catch (\Exception $queryError) {
                     \Log::error('Error querying galleries: ' . $queryError->getMessage());
                     $galeri = collect([]);
@@ -741,6 +746,12 @@ Route::get('/user/gallery', function () {
             \Log::error('Error loading kategori: ' . $e->getMessage());
             $kategoris = collect([]);
         }
+        
+        // Debug: Log sebelum render
+        \Log::info('Rendering gallery page', [
+            'gallery_count' => $galeri->count(),
+            'kategori_count' => $kategoris->count(),
+        ]);
         
         return view('user.gallery', compact('galeri', 'kategoris'));
     } catch (\Throwable $e) {
